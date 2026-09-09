@@ -15,7 +15,7 @@ UI 완성도 자체보다 DOM 조작, 이벤트 처리, 비동기 API, 상태별
 
 ## 2. 필수 요구사항
 
-체크 표시는 코드 구현 기준이며, Stage 2는 사용자 확인 완료, Stage 3의 브라우저 사용자 검토는 대기 중입니다. 프로필 이미지와 소셜 링크는 실제 자료 확정 후 추가합니다.
+체크 표시는 코드 구현 기준이며, Stage 2와 Stage 3은 사용자 확인 완료이며, Stage 4는 사용자 검토 대기입니다. 프로필 이미지와 소셜 링크는 실제 자료 확정 후 추가합니다.
 
 ### 프로젝트 구조
 
@@ -66,38 +66,38 @@ UI 완성도 자체보다 DOM 조작, 이벤트 처리, 비동기 API, 상태별
 
 - [ ] `var` 사용 금지, `const`/`let` 사용
 - [ ] HTML `onclick` 사용 금지
-- [ ] 이벤트는 `addEventListener()`로 연결
-- [ ] `querySelector()` 사용
-- [ ] `querySelectorAll()` 사용
+- [x] 이벤트는 `addEventListener()`로 연결
+- [x] `querySelector()` 사용
+- [x] `querySelectorAll()` 사용
 - [ ] `textContent` 사용
 - [ ] `innerHTML` 사용
-- [ ] `classList.add()` 사용
-- [ ] `classList.remove()` 사용
-- [ ] `classList.toggle()` 사용
-- [ ] `click` 이벤트 처리
+- [x] `classList.add()` 사용
+- [x] `classList.remove()` 사용
+- [x] `classList.toggle()` 사용
+- [x] `click` 이벤트 처리
 - [ ] `submit` 이벤트 처리
-- [ ] `scroll` 이벤트 처리
+- [x] `scroll` 이벤트 처리
 - [ ] `input` 이벤트 처리
-- [ ] 필요한 기본 동작을 `event.preventDefault()`로 제어
+- [x] 필요한 기본 동작을 `event.preventDefault()`로 제어
 
 ### 인터랙션
 
 #### 햄버거 메뉴
-- [ ] 클릭 시 모바일 메뉴 열림
-- [ ] 재클릭 시 닫힘
-- [ ] `classList.toggle('active')` 활용
+- [x] 클릭 시 모바일 메뉴 열림
+- [x] 재클릭 시 닫힘
+- [x] `classList.toggle('active')` 활용
 
 #### 부드러운 스크롤
-- [ ] 네비게이션 클릭 시 대상 섹션으로 부드럽게 이동
+- [x] 네비게이션 클릭 시 대상 섹션으로 부드럽게 이동
 
 #### Scroll To Top
-- [ ] 일정 스크롤 이상에서 버튼 표시
-- [ ] 기준값을 README에 기록
-- [ ] 클릭 시 최상단으로 부드럽게 이동
+- [x] 일정 스크롤 이상에서 버튼 표시
+- [x] 기준값을 README에 기록
+- [x] 클릭 시 최상단으로 부드럽게 이동
 
 #### 스크롤 시 네비게이션 스타일
-- [ ] 일정 스크롤 이상에서 스타일 변경
-- [ ] 기준값을 README에 기록
+- [x] 일정 스크롤 이상에서 스타일 변경
+- [x] 기준값을 README에 기록
 
 #### 다크 모드
 - [ ] 버튼으로 light/dark 전환
@@ -125,11 +125,11 @@ UI 완성도 자체보다 DOM 조작, 이벤트 처리, 비동기 API, 상태별
 
 ### ES6+ 및 배열 메서드
 
-- [ ] 화살표 함수 활용
+- [x] 화살표 함수 활용
 - [ ] 템플릿 리터럴 활용
 - [ ] 구조분해 할당 활용
 - [ ] `map()`으로 GitHub repo → 카드 HTML 변환
-- [ ] `forEach()` 활용
+- [x] `forEach()` 활용
 - [ ] `filter()`는 필수 아님. 프로젝트 필터링 구현 시 활용
 
 ### GitHub API
