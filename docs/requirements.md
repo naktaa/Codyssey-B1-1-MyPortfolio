@@ -15,7 +15,7 @@ UI 완성도 자체보다 DOM 조작, 이벤트 처리, 비동기 API, 상태별
 
 ## 2. 필수 요구사항
 
-체크 표시는 코드 구현 기준이며, Stage 2의 브라우저 사용자 검토는 대기 중입니다. 프로필 이미지와 소셜 링크는 실제 자료 확정 후 추가합니다.
+체크 표시는 코드 구현 기준이며, Stage 2는 사용자 확인 완료, Stage 3의 브라우저 사용자 검토는 대기 중입니다. 프로필 이미지와 소셜 링크는 실제 자료 확정 후 추가합니다.
 
 ### 프로젝트 구조
 
@@ -25,7 +25,7 @@ UI 완성도 자체보다 DOM 조작, 이벤트 처리, 비동기 API, 상태별
 - [x] `images/` 디렉터리 존재
 - [x] `css/style.css`를 외부 스타일시트로 연결
 - [x] JavaScript를 외부 파일로 분리하고 `defer`로 연결
-- [ ] VS Code + Live Server에서 실행 가능
+- [x] VS Code + Live Server에서 실행 가능
 
 ### HTML / 접근성 / 시맨틱 구조
 
@@ -47,20 +47,20 @@ UI 완성도 자체보다 DOM 조작, 이벤트 처리, 비동기 API, 상태별
 
 ### CSS
 
-- [ ] CSS 변수(`:root`)로 색상/폰트/간격 정의
+- [x] CSS 변수(`:root`)로 색상/폰트/간격 정의
 - [ ] `[data-theme="dark"]`에서 다크 모드 변수 재정의
-- [ ] 모바일 퍼스트 방식
-- [ ] 네비게이션에 Flexbox 사용
-- [ ] Projects 카드에 CSS Grid 사용
-- [ ] Grid에 `auto-fit` + `minmax()` 사용
-- [ ] 768px 태블릿 브레이크포인트
-- [ ] 1024px 데스크톱 브레이크포인트
-- [ ] 모바일에서 일반 메뉴 숨김
-- [ ] 모바일에서 햄버거 버튼 표시
-- [ ] 버튼 hover + transition
-- [ ] 카드 hover + transition
-- [ ] 카드 `box-shadow`
-- [ ] 인라인 `style=""` 사용 금지
+- [x] 모바일 퍼스트 방식
+- [x] 네비게이션에 Flexbox 사용
+- [x] Projects 카드에 CSS Grid 사용
+- [x] Grid에 `auto-fit` + `minmax()` 사용
+- [x] 768px 태블릿 브레이크포인트
+- [x] 1024px 데스크톱 브레이크포인트
+- [x] 모바일에서 일반 메뉴 숨김
+- [x] 모바일에서 햄버거 버튼 표시
+- [x] 버튼 hover + transition
+- [x] 카드 hover + transition
+- [x] 카드 `box-shadow`
+- [x] 인라인 `style=""` 사용 금지
 
 ### JavaScript 기본 규칙
 

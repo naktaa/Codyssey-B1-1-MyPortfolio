@@ -11,8 +11,12 @@
   <body>
     <header class="site-header">
       <nav class="navigation" aria-label="주요 메뉴">
-        <a class="logo" href="#hero">My Portfolio</a>
-        <ul class="nav-list">
+        <a class="logo" href="#hero"><span class="logo-mark" aria-hidden="true">m.</span> My Portfolio</a>
+        <!-- 메뉴 열기/닫기는 다음 JavaScript 단계에서 연결합니다. -->
+        <button class="menu-toggle" type="button" aria-label="메뉴 열기 (준비 중)" aria-controls="nav-list" aria-expanded="false" disabled>
+          <span></span><span></span><span></span>
+        </button>
+        <ul id="nav-list" class="nav-list">
           <li><a href="#hero">홈</a></li>
           <li><a href="#about">소개</a></li>
           <li><a href="#skills">기술</a></li>
@@ -25,41 +29,49 @@
 
     <main id="main-content">
       <section id="hero" class="hero" aria-labelledby="hero-title">
-        <p>배우고, 만들고, 기록합니다.</p>
-        <h1 id="hero-title">안녕하세요,<br>웹 개발을 배우는 개발자입니다.</h1>
-        <p>작은 기능 하나부터 원리를 이해하며, 사용하기 편한 웹을 만들어갑니다.</p>
-        <a class="button" href="#projects">프로젝트 보기</a>
-        <a class="button" href="#contact">연락하기</a>
+        <p class="eyebrow">LEARNING & BUILDING</p>
+        <h1 id="hero-title">작은 배움이 모여,<br><span>더 나은 웹으로.</span></h1>
+        <p class="hero-description">안녕하세요, 웹 개발을 배우는 개발자입니다.<br>작은 기능 하나부터 원리를 이해하며,<br class="mobile-break"> 사용하기 편한 웹을 만들어갑니다.</p>
+        <div class="hero-actions">
+          <a class="button" href="#projects">프로젝트 보기 <span aria-hidden="true">↗</span></a>
+          <a class="button button-secondary" href="#contact">연락하기</a>
+        </div>
+        <p class="hero-note">배우고, 만들고, 기록합니다.</p>
       </section>
 
       <section id="about" aria-labelledby="about-title">
-        <h2 id="about-title">About</h2>
+        <div class="section-heading"><p class="eyebrow">01 / ABOUT</p><h2 id="about-title">기본부터, 차근차근.</h2></div>
+        <div class="about-layout">
         <!-- 실제 프로필 이미지가 준비되면 images/에 추가하고 의미 있는 alt를 작성합니다. -->
-        <p class="profile-placeholder">프로필 이미지 준비 중</p>
+        <div class="profile-placeholder"><span class="profile-monogram" aria-hidden="true">me.</span><p>프로필 이미지 준비 중</p></div>
+        <div class="about-copy">
         <p>HTML, CSS, JavaScript의 기본기를 쌓으며 웹의 동작 원리를 공부하고 있습니다.</p>
         <p>사용자의 행동이 화면의 변화로 이어지는 과정을 직접 구현하고 기록합니다.</p>
-        <p>이름과 소개는 추후 실제 내용으로 업데이트할 예정입니다.</p>
+        <p class="muted">이름과 소개는 추후 실제 내용으로 업데이트할 예정입니다.</p>
+        </div>
+        </div>
       </section>
 
       <section id="skills" aria-labelledby="skills-title">
-        <h2 id="skills-title">Skills</h2>
+        <div class="section-heading"><p class="eyebrow">02 / SKILLS</p><h2 id="skills-title">생각을 화면으로 옮기는 도구.</h2></div>
         <p>이번 프로젝트에서 배우고 사용하는 기술입니다.</p>
         <ul class="skills-list">
-          <li><strong>HTML</strong> — 콘텐츠의 의미와 페이지 구조</li>
-          <li><strong>CSS</strong> — 스타일과 반응형 레이아웃</li>
-          <li><strong>JavaScript</strong> — 이벤트 처리와 화면 업데이트</li>
+          <li><span class="skill-symbol" aria-hidden="true">&lt;/&gt;</span><strong>HTML</strong><p>콘텐츠의 의미와 페이지 구조</p></li>
+          <li><span class="skill-symbol" aria-hidden="true">{ }</span><strong>CSS</strong><p>스타일과 반응형 레이아웃</p></li>
+          <li><span class="skill-symbol" aria-hidden="true">JS</span><strong>JavaScript</strong><p>이벤트 처리와 화면 업데이트</p></li>
         </ul>
       </section>
 
       <section id="projects" aria-labelledby="projects-title">
-        <h2 id="projects-title">Projects</h2>
+        <div class="section-heading"><p class="eyebrow">03 / PROJECTS</p><h2 id="projects-title">만들면서 배운 것들.</h2></div>
         <p>배움을 코드로 옮긴 프로젝트를 소개합니다.</p>
-        <p>현재는 예시 카드입니다. GitHub 저장소 목록은 API 연동 단계에서 표시합니다.</p>
+        <p class="muted">현재는 예시 카드입니다. GitHub 저장소 목록은 API 연동 단계에서 표시합니다.</p>
         <div class="projects-grid">
           <article class="project-card" aria-labelledby="portfolio-title">
+            <p class="project-category">CODYSSEY · B1-1</p>
             <h3 id="portfolio-title">반응형 포트폴리오</h3>
-            <p>순수 HTML, CSS, JavaScript로 만드는 Codyssey B1-1 미션입니다. 현재 HTML 구조를 구현하고 있습니다.</p>
-            <ul aria-label="사용 기술">
+            <p>순수 HTML, CSS, JavaScript로 만드는 첫 포트폴리오. 웹의 구조부터 반응형 레이아웃까지, 하나씩 쌓아가는 중입니다.</p>
+            <ul class="tech-tags" aria-label="사용 기술">
               <li>HTML</li>
               <li>CSS</li>
               <li>JavaScript</li>
@@ -69,7 +81,7 @@
       </section>
 
       <section id="contact" aria-labelledby="contact-title">
-        <h2 id="contact-title">Contact</h2>
+        <div class="section-heading"><p class="eyebrow">04 / CONTACT</p><h2 id="contact-title">함께 나누고 싶은 이야기가 있나요?</h2></div>
         <p id="contact-description">이름, 이메일, 메시지를 입력하는 폼입니다. 현재 전송 기능은 준비 중입니다.</p>
         <form class="contact-form" aria-describedby="contact-description">
           <div class="form-field">
@@ -85,7 +97,7 @@
             <textarea id="contact-message" name="message" rows="6" required></textarea>
           </div>
           <!-- 폼 검증과 submit 이벤트를 구현한 뒤 제출 버튼을 활성화합니다. -->
-          <button type="submit" disabled>보내기 (준비 중)</button>
+          <button class="button" type="submit" disabled>보내기 (준비 중)</button>
         </form>
       </section>
     </main>
