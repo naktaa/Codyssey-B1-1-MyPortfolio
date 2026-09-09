@@ -22,7 +22,7 @@
   --shadow-hover: 0 12px 32px rgb(38 56 45 / 10%);
 }
 
-/* 토글과 저장 기능은 다크 모드 단계에서 연결합니다. */
+/* JavaScript가 html의 data-theme을 바꾸면 이 색상들이 적용됩니다. */
 [data-theme="dark"] {
   color-scheme: dark;
   --color-bg: #161f19;
@@ -180,6 +180,7 @@ a, button {
   color: var(--color-accent);
 }
 .menu-toggle {
+  margin-left: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -197,6 +198,24 @@ a, button {
   width: 18px;
   height: 2px;
   background: currentColor;
+}
+.theme-toggle {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 0.6rem;
+  background: var(--color-surface);
+  color: var(--color-accent);
+  font-size: 1.4rem;
+  line-height: 1;
+}
+.theme-toggle:hover {
+  background: var(--color-soft);
+  border-color: var(--color-accent);
 }
 
 section {
@@ -488,6 +507,7 @@ section[id], footer[id] {
   }
   .nav-list {
     display: flex;
+    margin-left: auto;
     align-items: center;
     gap: 0.25rem;
   }

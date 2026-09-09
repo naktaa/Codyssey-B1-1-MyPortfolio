@@ -15,7 +15,7 @@ UI 완성도 자체보다 DOM 조작, 이벤트 처리, 비동기 API, 상태별
 
 ## 2. 필수 요구사항
 
-체크 표시는 코드 구현 기준이며, Stage 2와 Stage 3은 사용자 확인 완료이며, Stage 4는 사용자 검토 대기입니다. 프로필 이미지와 소셜 링크는 실제 자료 확정 후 추가합니다.
+체크 표시는 코드 구현 기준입니다. Stage 2~4는 사용자 확인 완료, Stage 5는 사용자 검토 대기입니다. 배포 환경의 최종 검증은 별도로 진행합니다. 프로필 이미지와 소셜 링크는 실제 자료 확정 후 추가합니다.
 
 ### 프로젝트 구조
 
@@ -48,7 +48,7 @@ UI 완성도 자체보다 DOM 조작, 이벤트 처리, 비동기 API, 상태별
 ### CSS
 
 - [x] CSS 변수(`:root`)로 색상/폰트/간격 정의
-- [ ] `[data-theme="dark"]`에서 다크 모드 변수 재정의
+- [x] `[data-theme="dark"]`에서 다크 모드 변수 재정의
 - [x] 모바일 퍼스트 방식
 - [x] 네비게이션에 Flexbox 사용
 - [x] Projects 카드에 CSS Grid 사용
@@ -64,12 +64,12 @@ UI 완성도 자체보다 DOM 조작, 이벤트 처리, 비동기 API, 상태별
 
 ### JavaScript 기본 규칙
 
-- [ ] `var` 사용 금지, `const`/`let` 사용
-- [ ] HTML `onclick` 사용 금지
+- [x] `var` 사용 금지, `const`/`let` 사용
+- [x] HTML `onclick` 사용 금지
 - [x] 이벤트는 `addEventListener()`로 연결
 - [x] `querySelector()` 사용
 - [x] `querySelectorAll()` 사용
-- [ ] `textContent` 사용
+- [x] `textContent` 사용
 - [ ] `innerHTML` 사용
 - [x] `classList.add()` 사용
 - [x] `classList.remove()` 사용
@@ -100,10 +100,10 @@ UI 완성도 자체보다 DOM 조작, 이벤트 처리, 비동기 API, 상태별
 - [x] 기준값을 README에 기록
 
 #### 다크 모드
-- [ ] 버튼으로 light/dark 전환
-- [ ] `data-theme` 기반으로 CSS 적용
-- [ ] localStorage에 선택 저장
-- [ ] 새로고침 후 저장된 테마 복원
+- [x] 버튼으로 light/dark 전환
+- [x] `data-theme` 기반으로 CSS 적용
+- [x] localStorage에 선택 저장
+- [x] 새로고침 후 저장된 테마 복원
 
 #### 스크롤 애니메이션
 - [ ] Intersection Observer 사용
@@ -152,7 +152,7 @@ UI 완성도 자체보다 DOM 조작, 이벤트 처리, 비동기 API, 상태별
 
 아래 중 최소 3개 이상이 코드 구조상 명확해야 한다.
 
-- [ ] 테마 상태 → 전체 테마 렌더링
+- [x] 테마 상태 → 전체 테마 렌더링
 - [ ] API 상태(`loading/success/error/empty`) → Projects 렌더링
 - [ ] 폼 유효성 상태 → 오류/성공 메시지 렌더링
 - [ ] 선택: 프로젝트 필터 상태 → 프로젝트 목록 렌더링
@@ -181,14 +181,14 @@ UI 완성도 자체보다 DOM 조작, 이벤트 처리, 비동기 API, 상태별
 
 ## 3. README 필수 항목
 
-- [ ] 프로젝트 설명
-- [ ] 사용 기술
-- [ ] 실행 방법
-- [ ] 프로젝트 구조
-- [ ] 주요 기능
-- [ ] 이벤트 → 상태 → 렌더링 흐름 설명
-- [ ] Scroll To Top 표시 기준값
-- [ ] 스크롤 시 네비게이션 변경 기준값
+- [x] 프로젝트 설명
+- [x] 사용 기술
+- [x] 실행 방법
+- [x] 프로젝트 구조
+- [x] 주요 기능
+- [x] 이벤트 → 상태 → 렌더링 흐름 설명
+- [x] Scroll To Top 표시 기준값
+- [x] 스크롤 시 네비게이션 변경 기준값
 - [ ] Intersection Observer threshold
 - [ ] GitHub Pages 배포 URL
 - [ ] 스크린샷
