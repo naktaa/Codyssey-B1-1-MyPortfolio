@@ -25,15 +25,15 @@
 /* JavaScript가 html의 data-theme을 바꾸면 이 색상들이 적용됩니다. */
 [data-theme="dark"] {
   color-scheme: dark;
-  --color-bg: #161f19;
-  --color-surface: #202b23;
-  --color-soft: #28372c;
-  --color-text: #e6ede3;
-  --color-muted: #acbbaa;
+  --color-bg: #151617;
+  --color-surface: #222426;
+  --color-soft: #2c2f31;
+  --color-text: #f0f1f2;
+  --color-muted: #bfc3c7;
   --color-accent: #a4cba4;
   --color-accent-hover: #beddb8;
-  --color-on-accent: #16281b;
-  --color-border: #3c4d3f;
+  --color-on-accent: #172019;
+  --color-border: #484c50;
   --shadow: 0 8px 28px rgb(0 0 0 / 15%);
   --shadow-hover: 0 12px 32px rgb(0 0 0 / 25%);
 }
