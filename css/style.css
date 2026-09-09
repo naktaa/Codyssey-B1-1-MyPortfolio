@@ -570,7 +570,24 @@ section[id], footer[id] {
   }
 }
 
+/* 기본은 표시 상태이며, JavaScript로 관찰을 시작한 요소만 숨깁니다. */
+[data-reveal], .skills-list [data-reveal] {
+  transition: opacity 450ms ease, transform 450ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+.reveal-pending {
+  opacity: 0;
+  transform: translateY(16px);
+}
+.reveal-pending:focus-within {
+  opacity: 1;
+  transform: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .reveal-pending {
+    opacity: 1;
+    transform: none;
+  }
   *, *::before, *::after {
     transition: none !important;
   }

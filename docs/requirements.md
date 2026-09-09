@@ -15,7 +15,7 @@ UI 완성도 자체보다 DOM 조작, 이벤트 처리, 비동기 API, 상태별
 
 ## 2. 필수 요구사항
 
-체크 표시는 코드 구현 기준입니다. Stage 2~4는 사용자 확인 완료, Stage 5는 사용자 검토 대기입니다. 배포 환경의 최종 검증은 별도로 진행합니다. 프로필 이미지와 소셜 링크는 실제 자료 확정 후 추가합니다.
+체크 표시는 코드 구현 기준입니다. Stage 2~5는 사용자 확인 완료, Stage 6은 사용자 검토 대기입니다. 배포 환경의 최종 검증은 별도로 진행합니다. 프로필 이미지와 소셜 링크는 실제 자료 확정 후 추가합니다.
 
 ### 프로젝트 구조
 
@@ -106,10 +106,10 @@ UI 완성도 자체보다 DOM 조작, 이벤트 처리, 비동기 API, 상태별
 - [x] 새로고침 후 저장된 테마 복원
 
 #### 스크롤 애니메이션
-- [ ] Intersection Observer 사용
-- [ ] threshold 값 결정
-- [ ] 결정한 threshold 값을 README에 기록
-- [ ] 가능하면 권장값 `0.2 이상` 사용
+- [x] Intersection Observer 사용
+- [x] threshold 값 결정
+- [x] 결정한 threshold 값을 README에 기록
+- [x] 가능하면 권장값 `0.2 이상` 사용
 
 ### Contact 폼
 
@@ -189,7 +189,7 @@ UI 완성도 자체보다 DOM 조작, 이벤트 처리, 비동기 API, 상태별
 - [x] 이벤트 → 상태 → 렌더링 흐름 설명
 - [x] Scroll To Top 표시 기준값
 - [x] 스크롤 시 네비게이션 변경 기준값
-- [ ] Intersection Observer threshold
+- [x] Intersection Observer threshold
 - [ ] GitHub Pages 배포 URL
 - [ ] 스크린샷
 
