@@ -1,0 +1,21 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+
+# Logs
+*.log
+
+# Temporary
+*.tmp
+*.swp
+
+# Environment / secrets
+.env
+.env.*
+
+# Local-only notes
+*.local
