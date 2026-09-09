@@ -2,8 +2,9 @@
 
 순수 HTML, CSS, JavaScript를 사용해 구현하는 반응형 포트폴리오 웹사이트입니다.
 
-> 현재 상태: **초기 프로젝트 문서 구성 단계**  
-> 실제 웹 페이지 기능은 아직 구현하지 않았습니다.
+> 현재 상태: **HTML 시맨틱 구조 구현 — 사용자 검토 대기**
+>
+> 섹션과 폼의 HTML 구조를 구현했습니다. 스타일, 인터랙션, API는 후속 단계에서 구현합니다.
 
 ## Mission Goal
 
@@ -37,10 +38,12 @@
 
 ## Project Structure
 
-초기 문서 단계 기준:
-
 ```text
 .
+├── index.html
+├── css/style.css
+├── js/main.js
+├── images/.gitkeep
 ├── AGENTS.md
 ├── README.md
 ├── .gitignore
@@ -50,21 +53,29 @@
 │   ├── requirements.md
 │   ├── worklog.md
 │   └── troubleshooting.md
-└── evidence/
-    └── .gitkeep
+└── evidence/.gitkeep
 ```
 
-구현 시작 후 다음 구조가 추가될 예정입니다.
+## Current Implementation
 
-```text
-.
-├── index.html
-├── css/
-│   └── style.css
-├── js/
-│   └── main.js
-└── images/
-```
+- 시맨틱 태그로 구성한 Hero / About / Skills / Projects / Contact / Footer
+- 섹션 앵커 이동 메뉴와 CTA 링크
+- 예시 프로젝트 카드와 이름/이메일/메시지 폼
+- 외부 CSS와 `defer` JavaScript 연결 (현재 두 파일에는 안내 주석만 존재)
+
+소개 문구는 임시 내용입니다. 프로필 이미지와 소셜 링크는 추후 추가합니다.
+폼 제출 버튼은 검증 기능 구현 전까지 비활성화합니다. 실제 이메일 전송은 구현하지 않았습니다.
+현재 앵커는 브라우저 기본 동작으로 이동하며, 이벤트 → 상태 → 렌더링 흐름은 후속 JavaScript 단계에서 구현합니다.
+디자인은 깔끔한 구성과 은은한 초록색 포인트를 사용하도록 다음 CSS 단계에서 적용할 예정입니다.
+
+## Run Locally
+
+1. VS Code에서 이 프로젝트 폴더를 엽니다.
+2. Live Server 확장 프로그램을 설치합니다.
+3. `index.html`을 우클릭하고 **Open with Live Server**를 선택합니다.
+4. 최신 Chrome에서 열린 페이지를 확인합니다.
+
+현재는 브라우저 기본 스타일로 표시됩니다. 섹션 순서, 메뉴 이동, 라벨 클릭 시 입력 요소로 초점이 이동하는지 확인합니다.
 
 ## Development
 
