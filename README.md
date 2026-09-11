@@ -2,9 +2,9 @@
 
 순수 HTML, CSS, JavaScript를 사용해 구현하는 반응형 포트폴리오 웹사이트입니다.
 
-> 현재 상태: **Stage 8 GitHub API 연동 구현 — 사용자 검토 대기**
+> 현재 상태: **Stage 9 실제 콘텐츠와 README 정리 진행 중**
 >
-> Stage 7까지 사용자 검토를 마쳤고, naktaa의 공개 저장소 목록과 상태별 Projects 화면을 구현했습니다. 배포와 최종 제출 자료는 후속 단계입니다.
+> Stage 8까지 사용자 검토를 마쳤습니다. 이름·소개·GitHub 링크를 반영했으며, 프로필 이미지와 최종 스크린샷은 아직 준비 중입니다.
 
 ## Mission Goal
 
@@ -72,7 +72,7 @@
 - 다크 모드는 차콜 배경과 회백색 글자를 사용하고, 버튼과 강조 요소에 초록색을 유지합니다.
 - Intersection Observer로 섹션 제목과 기술·프로젝트 카드를 한 번씩 표시합니다.
 
-소개 문구는 임시 내용입니다. 프로필 이미지와 소셜 링크는 추후 추가합니다.
+포트폴리오 이름은 손현석이며, 학습 과정과 구현 원칙을 소개 문구에 반영했습니다. Footer에는 GitHub 프로필 링크를 제공합니다. 프로필 이미지는 TBD 상태로 유지합니다.
 Contact 폼은 입력 검증 데모입니다. '입력 확인' 버튼으로 검증하며 실제 이메일을 전송하거나 입력 내용을 저장하지 않습니다.
 앵커 클릭은 JavaScript에서 기본 이동을 막고 섹션으로 부드럽게 이동합니다. 주소 해시는 변경하지 않습니다. Ctrl/Cmd 등 보조키 클릭은 브라우저 기본 동작을 유지합니다.
 768px 미만에서는 햄버거 버튼으로 메뉴를 열고 닫습니다. 메뉴 항목 선택, Esc, 메뉴 바깥 클릭으로도 닫힙니다. 768px 경계를 넘으면 열린 상태를 초기화합니다.
@@ -104,7 +104,7 @@ JavaScript는 `js/main.js`에서 DOM을 선택하고 `addEventListener()`로 이
 
 ### 섹션 이동
 
-메뉴/CTA/푸터 링크 클릭 → `preventDefault()`로 기본 점프 방지 → 메뉴 닫기 → `moveToSection()` → 목적지에 초점을 옮기고 `scrollIntoView()`로 이동합니다.
+메뉴/CTA/헤더 제목 링크 클릭 → `preventDefault()`로 기본 점프 방지 → 메뉴 닫기 → `moveToSection()` → 목적지에 초점을 옮기고 `scrollIntoView()`로 이동합니다.
 
 - `tabindex="-1"`: 섹션에 코드로 초점을 줄 수 있게 하되 일반 Tab 순서에는 넣지 않습니다.
 - `focus({ preventScroll: true })`: 초점을 옮기는 순간 별도의 화면 점프가 생기지 않도록 합니다.
@@ -134,7 +134,7 @@ Live Server 페이지를 새로고침합니다. 모바일 폭은 Chrome 개발�
 | 5 | 데스크톱 메뉴, Hero의 프로젝트 보기/연락하기 누르기 | 해당 섹션으로 이동하며 제목이 헤더에 가려지지 않음 |
 | 6 | 페이지 맨 위에서 천천히 아래로 스크롤 | 헤더는 상단에 유지되고 60px 이상에서 배경·그림자 변경 |
 | 7 | 300px 이상 내렸다가 위로 올리기 | 오른쪽 아래 ↑ 버튼이 나타나고 300px 미만에서는 사라짐 |
-| 8 | ↑ 버튼과 Footer의 맨 위로 링크 각각 누르기 | 페이지 상단으로 이동 |
+| 8 | 오른쪽 아래 ↑ 버튼 누르기 | 페이지 상단으로 이동 |
 | 9 | Tab으로 메뉴 버튼에 초점을 맞추고 Enter/Space 누르기 | 메뉴가 열림. Tab으로 링크 선택 후 Enter로 이동 가능 |
 | 10 | 스크롤한 위치에서 새로고침 | 브라우저가 위치를 복원하면 헤더/↑ 버튼도 그 위치에 맞게 표시 |
 | 11 | OS 동작 줄이기 또는 DevTools Rendering의 prefers-reduced-motion: reduce 설정 후 링크 누르기 | 부드러운 애니메이션 없이 즉시 이동 |
@@ -317,7 +317,7 @@ delete window.portfolioOriginalFetch;
 
 ## Deployment
 
-- Repository URL: TBD
+- Repository URL: https://github.com/naktaa/Codyssey-B1-1-MyPortfolio
 - GitHub Pages URL: TBD
 
 ## Screenshots

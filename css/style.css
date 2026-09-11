@@ -142,16 +142,6 @@ a, button {
   font-weight: 700;
   letter-spacing: -0.02em;
 }
-.logo-mark {
-  display: grid;
-  place-items: center;
-  width: 2.1rem;
-  height: 2.1rem;
-  border-radius: 0.6rem;
-  background: var(--color-accent);
-  color: var(--color-on-accent);
-  font-size: 1.35rem;
-}
 .nav-list {
   display: none;
 }
@@ -576,13 +566,18 @@ section[id], footer[id] {
 .site-footer p + p {
   margin-top: 0;
 }
-.site-footer a {
-  align-self: flex-start;
+.footer-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+.footer-links a {
   color: var(--color-accent);
   text-decoration: underline;
   text-underline-offset: 4px;
 }
-.site-footer a:hover {
+.footer-links a:hover {
   color: var(--color-accent-hover);
 }
 
@@ -630,9 +625,6 @@ section[id], footer[id] {
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-  }
-  .site-footer a {
-    align-self: auto;
   }
 }
 
