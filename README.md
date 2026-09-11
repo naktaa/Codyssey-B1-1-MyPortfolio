@@ -2,9 +2,9 @@
 
 순수 HTML, CSS, JavaScript를 사용해 구현하는 반응형 포트폴리오 웹사이트입니다.
 
-> 현재 상태: **Stage 7 Contact 폼 유효성 검사 완료 — GitHub API 단계 예정**
+> 현재 상태: **Stage 8 GitHub API 연동 구현 — 사용자 검토 대기**
 >
-> Stage 7까지 구현하고 사용자 검토를 마쳤습니다. 다음 단계는 GitHub API 연동입니다.
+> Stage 7까지 사용자 검토를 마쳤고, naktaa의 공개 저장소 목록과 상태별 Projects 화면을 구현했습니다. 배포와 최종 제출 자료는 후속 단계입니다.
 
 ## Mission Goal
 
@@ -60,7 +60,7 @@
 
 - 시맨틱 태그로 구성한 Hero / About / Skills / Projects / Contact / Footer
 - 섹션 앵커 이동 메뉴와 CTA 링크
-- 예시 프로젝트 카드와 이름/이메일/메시지 폼
+- GitHub API 프로젝트 카드와 이름/이메일/메시지 검증 폼
 - 외부 CSS와 `defer` JavaScript 연결
 - 모바일 메뉴 열기/닫기와 접근성 속성 동기화
 - 섹션으로 부드럽게 이동, 스크롤 시 헤더 스타일 변경, 맨 위로 버튼
@@ -76,7 +76,7 @@
 Contact 폼은 입력 검증 데모입니다. '입력 확인' 버튼으로 검증하며 실제 이메일을 전송하거나 입력 내용을 저장하지 않습니다.
 앵커 클릭은 JavaScript에서 기본 이동을 막고 섹션으로 부드럽게 이동합니다. 주소 해시는 변경하지 않습니다. Ctrl/Cmd 등 보조키 클릭은 브라우저 기본 동작을 유지합니다.
 768px 미만에서는 햄버거 버튼으로 메뉴를 열고 닫습니다. 메뉴 항목 선택, Esc, 메뉴 바깥 클릭으로도 닫힙니다. 768px 경계를 넘으면 열린 상태를 초기화합니다.
-현재 프로젝트 카드는 한 개이므로 넓은 화면에서는 가용 너비를 채웁니다. API 카드가 추가되면 Grid가 너비에 맞춰 열을 나눕니다.
+Projects는 naktaa의 공개 저장소를 최근 업데이트 순으로 최대 100개 표시합니다. 카드에는 이름·설명·언어·별 수·GitHub 링크가 있으며 Grid가 화면 폭에 맞춰 열을 나눕니다. 로딩/빈 목록/오류 안내와 재시도 버튼을 제공합니다.
 
 ## Run Locally
 
@@ -170,7 +170,7 @@ Contact 폼 검증과 다크 모드는 아래 확인 순서를 따릅니다.
 
 ## Scroll Reveal: 동작 원리와 확인 순서
 
-`initScrollReveal()`은 `data-reveal`이 있는 섹션 제목 4개, 기술 카드 3개, 예시 프로젝트 카드 1개를 관찰합니다. Hero는 처음부터 표시합니다.
+`initScrollReveal()`은 섹션 제목 4개와 기술 카드 3개를 관찰합니다. API 응답으로 추가되는 프로젝트 카드도 `observeRevealElements()`로 같은 Observer에 연결합니다. Hero는 처음부터 표시합니다.
 
 요소 관찰 시작 → `reveal-pending` 클래스 추가 → 요소의 20% 이상이 화면에 들어옴 → 대기 클래스 제거 → 투명도 0에서 1, 아래 16px에서 원래 위치로 450ms 동안 전환합니다.
 
@@ -179,7 +179,7 @@ Contact 폼 검증과 다크 모드는 아래 확인 순서를 따릅니다.
 - JavaScript가 실행되지 않거나 API를 지원하지 않으면 기본 표시 상태를 유지합니다.
 - 동작 줄이기 설정에서는 숨기지 않습니다. 페이지 이용 중 설정을 켜도 모두 표시하고 관찰을 중단합니다. 다시 끄더라도 현재 페이지에서 이미 표시한 내용을 숨기지 않습니다.
 - 키보드로 대상 안에 초점이 들어오면 즉시 표시합니다.
-- 이후 API에서 새로 만드는 카드는 API 구현 단계에서 관찰 연결 여부를 다룹니다.
+- 동작 줄이기를 켜면 동적으로 추가된 프로젝트 카드도 모두 표시합니다. 해당 설정으로 Observer를 사용하지 않는 경우 새 카드도 바로 보입니다.
 
 1. 페이지 맨 위에서 새로고침하고 천천히 내려가며 제목과 카드가 자연스럽게 나타나는지 확인합니다.
 2. 한 번 끝까지 내린 뒤 위아래로 이동해도 이미 표시한 내용이 다시 숨지 않는지 확인합니다.
@@ -237,13 +237,81 @@ Contact 폼 검증과 다크 모드는 아래 확인 순서를 따릅니다.
 
 ## GitHub API
 
-구현 예정 엔드포인트:
+사용 계정: `naktaa`. 페이지 로드 시 한 번 요청하며 오류 시 재시도 버튼으로 다시 요청합니다.
 
 ```text
-https://api.github.com/users/{본인아이디}/repos
+https://api.github.com/users/naktaa/repos?sort=updated&per_page=100
 ```
 
-GitHub 사용자 아이디는 API 구현 단계에서 실제 값으로 확정합니다.
+공개 저장소를 업데이트 순으로 최대 100개 가져옵니다. 100개를 넘는 경우 추가 페이지는 현재 불러오지 않습니다. [GitHub 공식 API 문서](https://docs.github.com/en/rest/repos/repos#list-repositories-for-a-user)의 사용자 저장소 엔드포인트를 사용합니다.
+
+### 함수와 상태 흐름
+
+페이지 시작/재시도 클릭 → `loadProjects()` → loading → `fetch` 응답 확인 → success/empty/error → `renderProjects()`.
+
+- `projectsState`: 현재 상태, 저장소 배열, 오류 안내를 보관합니다. 처음의 idle은 요청 전 내부 상태이며 화면은 네 가지 결과 상태로 갱신합니다.
+- `loadProjects()`: 로딩 중의 중복 요청을 막고 로딩 화면부터 표시합니다. `await fetch()` 후 `response.ok`를 확인하고, JSON이 저장소 배열인지 검사합니다. 데이터가 있으면 success, 빈 배열이면 empty로 바꿉니다.
+- `try/catch`: HTTP 실패, 네트워크 오류, JSON 오류, 예상과 다른 응답을 error로 처리합니다. 403/429는 요청 또는 접근 제한 안내를 제공합니다. 실제 제한을 발생시키는 반복 호출로 테스트하지 않습니다.
+- `AbortController`: 15초 동안 응답이 끝나지 않으면 요청을 취소하고 시간 초과 안내를 표시합니다. 타이머는 finally에서 해제합니다.
+- `renderProjects()`: 상태에 맞춰 안내의 `textContent`, 목록의 `innerHTML`, `aria-busy`, 재시도 버튼 표시를 갱신합니다. 정상 목록은 `repos.map(createProjectCard).join('')`로 만듭니다.
+- `createProjectCard()`: 구조분해로 이름·설명·언어·별 수를 꺼내 템플릿 리터럴로 article을 만듭니다. 설명과 언어가 null이면 대체 문구를 표시합니다.
+- `escapeHTML()`: 외부 문자열의 &, <, >, 따옴표를 이스케이프해 태그로 실행되지 않게 합니다. 링크는 고정된 GitHub 도메인과 인코딩한 저장소 이름으로 구성합니다.
+- 재시도는 같은 `loadProjects()`를 호출합니다. 버튼이 숨겨지는 동안 키보드 초점은 상태 안내로 옮깁니다.
+
+### Stage 8 직접 확인 순서
+
+1. Live Server를 새로고침하고 Projects로 이동합니다. 저장소 이름·설명·언어·별 수가 표시되고 링크가 해당 저장소로 이동하는지 확인합니다.
+2. 모바일 390px/태블릿/데스크톱과 다크 모드에서 카드 배치, 긴 저장소 이름, 카드 표시 애니메이션을 확인합니다.
+3. 로딩과 빈 목록의 화면만 확인하려면 아래 Console 방법을 사용합니다. 실제 느린 요청은 Chrome Network 탭에서 Slow 3G로 설정한 뒤 한 번 새로고침해 확인할 수 있습니다. 끝나면 No throttling으로 복구합니다.
+4. 오류/재시도는 아래 로컬 응답 대체 방법으로 확인할 수 있습니다. 실제 GitHub 호출을 반복하지 않습니다.
+
+**로딩/빈 목록 화면만 확인:** 초기 요청이 끝난 뒤 Projects로 이동하고 개발자 도구 Console을 엽니다. 다음 코드는 서버 요청 없이 현재 탭의 상태를 바꾸어 UI를 확인합니다.
+
+```js
+projectsState.status = 'loading';
+renderProjects();
+```
+
+로딩 안내를 충분히 확인한 뒤 아래 코드를 실행하면 빈 목록 화면으로 바뀝니다.
+
+```js
+projectsState.status = 'empty';
+projectsState.repos = [];
+renderProjects();
+```
+
+오류 화면만 확인하려면 아래 코드를 실행합니다. 오류 안내와 '다시 시도' 버튼이 표시되어야 합니다.
+
+```js
+projectsState.status = 'error';
+projectsState.errorMessage = '프로젝트를 불러올 수 없습니다. 다시 시도해 주세요.';
+renderProjects();
+```
+
+'다시 시도'를 누르면 실제 GitHub 요청으로 목록을 다시 불러옵니다. 또는 페이지를 새로고침해 복구합니다. 이 방법은 렌더링 확인용이며 실제 요청 실패 처리까지 확인하려면 아래 응답 대체 방법을 사용합니다.
+
+**응답 처리까지 확인:** 개발자 도구 Console에서 아래 코드를 한 번 실행하면 현재 탭의 API 응답만 빈 배열로 대체합니다. 저장소 데이터는 변경하지 않습니다.
+
+```js
+window.portfolioOriginalFetch = window.fetch;
+window.fetch = async () => new Response('[]', {
+  status: 200, headers: { 'Content-Type': 'application/json' }
+});
+await loadProjects();
+```
+
+이 상태에서 아래 코드를 실행하면 403 오류와 재시도 버튼을 확인할 수 있습니다.
+
+```js
+window.fetch = async () => new Response('{}', { status: 403 });
+await loadProjects();
+window.fetch = window.portfolioOriginalFetch;
+delete window.portfolioOriginalFetch;
+```
+
+이제 '다시 시도' 버튼을 눌러 정상 목록으로 돌아오는지 확인합니다. 중간에 중단했다면 페이지를 새로고침하면 원래 fetch로 복구됩니다. 코드 실행 시 기존 요청이 끝난 상태에서 확인합니다.
+
+구현 검증에서는 실제 응답을 한 번 조회했고, 이후 성공/빈 목록/403/429/404/500/네트워크/시간 초과/응답 형식 오류와 재시도는 모의 응답으로 검사했습니다. 실제 Chrome에서의 레이아웃과 네트워크 동작은 사용자 검토 대기입니다.
 
 ## Deployment
 

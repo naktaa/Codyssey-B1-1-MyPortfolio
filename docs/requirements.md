@@ -15,7 +15,7 @@ UI 완성도 자체보다 DOM 조작, 이벤트 처리, 비동기 API, 상태별
 
 ## 2. 필수 요구사항
 
-체크 표시는 코드 구현 기준입니다. Stage 1~7은 사용자 검토를 마쳤습니다. 배포 환경의 최종 검증은 별도로 진행합니다. 프로필 이미지와 소셜 링크는 실제 자료 확정 후 추가합니다.
+체크 표시는 코드 구현 기준입니다. Stage 1~7은 사용자 검토 완료, Stage 8은 사용자 검토 대기입니다. 배포 환경의 최종 검증은 별도로 진행합니다. 프로필 이미지와 소셜 링크는 실제 자료 확정 후 추가합니다.
 
 ### 프로젝트 구조
 
@@ -38,7 +38,7 @@ UI 완성도 자체보다 DOM 조작, 이벤트 처리, 비동기 API, 상태별
 - [x] Hero 섹션: 인사말 + CTA 버튼
 - [ ] About 섹션: 자기소개 + 프로필 이미지
 - [x] Skills 섹션: 기술 스택 목록
-- [ ] Projects 섹션: GitHub API 결과
+- [x] Projects 섹션: GitHub API 결과
 - [x] Contact 섹션: 문의 폼
 - [ ] Footer: 저작권 + 소셜 링크
 - [x] 네비게이션에 각 섹션 앵커 링크 제공
@@ -70,7 +70,7 @@ UI 완성도 자체보다 DOM 조작, 이벤트 처리, 비동기 API, 상태별
 - [x] `querySelector()` 사용
 - [x] `querySelectorAll()` 사용
 - [x] `textContent` 사용
-- [ ] `innerHTML` 사용
+- [x] `innerHTML` 사용
 - [x] `classList.add()` 사용
 - [x] `classList.remove()` 사용
 - [x] `classList.toggle()` 사용
@@ -128,32 +128,32 @@ UI 완성도 자체보다 DOM 조작, 이벤트 처리, 비동기 API, 상태별
 - [x] 화살표 함수 활용
 - [x] 템플릿 리터럴 활용
 - [x] 구조분해 할당 활용
-- [ ] `map()`으로 GitHub repo → 카드 HTML 변환
+- [x] `map()`으로 GitHub repo → 카드 HTML 변환
 - [x] `forEach()` 활용
 - [ ] `filter()`는 필수 아님. 프로젝트 필터링 구현 시 활용
 
 ### GitHub API
 
-- [ ] `fetch()` 사용
-- [ ] `async/await` 사용
-- [ ] `https://api.github.com/users/{본인아이디}/repos` 호출
-- [ ] 본인 GitHub 아이디를 실제 값으로 설정
-- [ ] 요청 시작 시 로딩 상태 표시
-- [ ] 정상 응답 시 카드 목록 렌더링
-- [ ] 빈 배열이면 빈 상태 렌더링
-- [ ] 실패 시 에러 상태 렌더링
-- [ ] 에러 UI에 재시도 버튼 제공
-- [ ] `try/catch` 사용
-- [ ] HTTP 비정상 응답(`response.ok === false`)도 에러로 처리
-- [ ] 403 레이트 리밋도 에러 UI로 연결
-- [ ] 짧은 시간 반복 새로고침을 피하며 테스트
+- [x] `fetch()` 사용
+- [x] `async/await` 사용
+- [x] `https://api.github.com/users/{본인아이디}/repos` 호출
+- [x] 본인 GitHub 아이디를 실제 값으로 설정
+- [x] 요청 시작 시 로딩 상태 표시
+- [x] 정상 응답 시 카드 목록 렌더링
+- [x] 빈 배열이면 빈 상태 렌더링
+- [x] 실패 시 에러 상태 렌더링
+- [x] 에러 UI에 재시도 버튼 제공
+- [x] `try/catch` 사용
+- [x] HTTP 비정상 응답(`response.ok === false`)도 에러로 처리
+- [x] 403 레이트 리밋도 에러 UI로 연결
+- [x] 짧은 시간 반복 새로고침을 피하며 테스트
 
 ### 상태 → 렌더링 흐름
 
 아래 중 최소 3개 이상이 코드 구조상 명확해야 한다.
 
 - [x] 테마 상태 → 전체 테마 렌더링
-- [ ] API 상태(`loading/success/error/empty`) → Projects 렌더링
+- [x] API 상태(`loading/success/error/empty`) → Projects 렌더링
 - [x] 폼 유효성 상태 → 오류/성공 메시지 렌더링
 - [ ] 선택: 프로젝트 필터 상태 → 프로젝트 목록 렌더링
 

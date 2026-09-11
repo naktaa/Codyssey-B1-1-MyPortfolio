@@ -67,19 +67,11 @@
       <section id="projects" aria-labelledby="projects-title">
         <div class="section-heading" data-reveal><p class="eyebrow">03 / PROJECTS</p><h2 id="projects-title">만들면서 배운 것들.</h2></div>
         <p>배움을 코드로 옮긴 프로젝트를 소개합니다.</p>
-        <p class="muted">현재는 예시 카드입니다. GitHub 저장소 목록은 API 연동 단계에서 표시합니다.</p>
-        <div class="projects-grid">
-          <article class="project-card" data-reveal aria-labelledby="portfolio-title">
-            <p class="project-category">CODYSSEY · B1-1</p>
-            <h3 id="portfolio-title">반응형 포트폴리오</h3>
-            <p>순수 HTML, CSS, JavaScript로 만드는 첫 포트폴리오. 웹의 구조부터 반응형 레이아웃까지, 하나씩 쌓아가는 중입니다.</p>
-            <ul class="tech-tags" aria-label="사용 기술">
-              <li>HTML</li>
-              <li>CSS</li>
-              <li>JavaScript</li>
-            </ul>
-          </article>
-        </div>
+        <p class="muted"><a class="projects-profile" href="https://github.com/naktaa?tab=repositories">naktaa의 공개 저장소</a> · 최근 업데이트 순으로 최대 100개를 표시합니다.</p>
+        <p class="projects-status" role="status" tabindex="-1">프로젝트 목록을 준비하고 있습니다.</p>
+        <button class="button projects-retry" type="button" hidden>다시 시도</button>
+        <div class="projects-grid" aria-busy="false"></div>
+        <noscript>프로젝트 목록을 보려면 JavaScript를 켜거나 위의 GitHub 링크를 이용해 주세요.</noscript>
       </section>
 
       <section id="contact" aria-labelledby="contact-title">

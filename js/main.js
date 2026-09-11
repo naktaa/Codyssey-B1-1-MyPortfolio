@@ -146,6 +146,15 @@ updateScrollUI();
 // 제목과 카드 단위로 관찰해 작은 화면에서도 기준 비율에 도달하도록 합니다.
 const REVEAL_THRESHOLD = 0.2;
 const revealElements = document.querySelectorAll('[data-reveal]');
+let revealObserver = null;
+
+const observeRevealElements = (elements) => {
+  if (!revealObserver) return;
+  elements.forEach((element) => {
+    element.classList.add('reveal-pending');
+    revealObserver.observe(element);
+  });
+};
 
 const initScrollReveal = () => {
   // 기본 상태는 표시이며, 애니메이션을 사용할 때만 숨김 상태로 준비합니다.
@@ -164,10 +173,8 @@ const initScrollReveal = () => {
     });
   }, { threshold: REVEAL_THRESHOLD });
 
-  revealElements.forEach((element) => {
-    element.classList.add('reveal-pending');
-    observer.observe(element);
-  });
+  revealObserver = observer;
+  observeRevealElements(revealElements);
 
   // 키보드로 초점을 옮긴 카드는 즉시 표시합니다.
   document.addEventListener('focusin', (event) => {
@@ -177,8 +184,9 @@ const initScrollReveal = () => {
 
   reducedMotionMedia.addEventListener('change', () => {
     if (reducedMotionMedia.matches) {
-      revealElements.forEach(showElement);
+      document.querySelectorAll('[data-reveal]').forEach(showElement);
       observer.disconnect();
+      revealObserver = null;
     }
   });
 };
@@ -251,3 +259,109 @@ contactForm.addEventListener('submit', (event) => {
 contactForm.noValidate = true;
 contactSubmit.disabled = false;
 renderContactForm();
+
+const GITHUB_USERNAME = 'naktaa';
+const PROJECTS_URL = `https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`;
+const projectsGrid = document.querySelector('.projects-grid');
+const projectsStatus = document.querySelector('.projects-status');
+const projectsRetry = document.querySelector('.projects-retry');
+
+const projectsState = {
+  status: 'idle',
+  repos: [],
+  errorMessage: '',
+};
+
+// API의 문자열이 HTML 태그나 속성으로 해석되지 않도록 변환합니다.
+const escapeHTML = (value) => {
+  const entities = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+  return String(value).replace(/[&<>"']/g, (character) => entities[character]);
+};
+
+const createProjectCard = (repo) => {
+  const { name, description, language, stargazers_count } = repo;
+  // 외부 응답의 URL을 그대로 쓰지 않고 GitHub 주소를 직접 구성합니다.
+  const repositoryURL = `https://github.com/${GITHUB_USERNAME}/${encodeURIComponent(name)}`;
+  const stars = Number.isInteger(stargazers_count) && stargazers_count >= 0 ? stargazers_count : 0;
+
+  return `
+    <article class="project-card" data-reveal>
+      <p class="project-category">GITHUB REPOSITORY</p>
+      <h3>${escapeHTML(name)}</h3>
+      <p>${escapeHTML(description || '등록된 설명이 없습니다.')}</p>
+      <ul class="tech-tags" aria-label="저장소 정보">
+        <li>${escapeHTML(language || '언어 정보 없음')}</li>
+        <li>별 ${stars}개</li>
+      </ul>
+      <a class="project-link" href="${escapeHTML(repositoryURL)}" aria-label="${escapeHTML(name)} 저장소 보기">GitHub에서 보기 ↗</a>
+    </article>`;
+};
+
+const renderProjects = () => {
+  const { status, repos, errorMessage } = projectsState;
+  projectsGrid.setAttribute('aria-busy', String(status === 'loading'));
+  projectsStatus.classList.toggle('is-error', status === 'error');
+  projectsRetry.hidden = status !== 'error';
+  projectsRetry.disabled = status === 'loading';
+
+  if (status === 'success') {
+    projectsGrid.innerHTML = repos.map(createProjectCard).join('');
+    projectsStatus.textContent = `${repos.length}개의 프로젝트를 불러왔습니다.`;
+    observeRevealElements(projectsGrid.querySelectorAll('[data-reveal]'));
+  } else {
+    projectsGrid.innerHTML = '';
+    if (status === 'loading') {
+      projectsStatus.textContent = '프로젝트를 불러오는 중입니다…';
+    } else if (status === 'empty') {
+      projectsStatus.textContent = '표시할 프로젝트가 없습니다.';
+    } else if (status === 'error') {
+      projectsStatus.textContent = errorMessage;
+    }
+  }
+};
+
+const loadProjects = async () => {
+  if (projectsState.status === 'loading') return;
+  projectsState.status = 'loading';
+  projectsState.repos = [];
+  projectsState.errorMessage = '';
+  renderProjects();
+
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), 15000);
+
+  try {
+    const response = await fetch(PROJECTS_URL, { signal: controller.signal });
+    if (!response.ok) {
+      if (response.status === 403 || response.status === 429) {
+        throw new Error('프로젝트를 불러올 수 없습니다. GitHub 요청 제한 또는 접근 제한이 발생했습니다. 잠시 후 다시 시도해 주세요.');
+      }
+      throw new Error('프로젝트를 불러올 수 없습니다. 잠시 후 다시 시도해 주세요.');
+    }
+
+    const repos = await response.json();
+    if (!Array.isArray(repos) || !repos.every((repo) => repo && typeof repo.name === 'string' && repo.name.length > 0)) {
+      throw new Error('프로젝트를 불러올 수 없습니다. 응답 형식을 확인할 수 없습니다.');
+    }
+    projectsState.repos = repos;
+    projectsState.status = repos.length > 0 ? 'success' : 'empty';
+  } catch (error) {
+    projectsState.status = 'error';
+    projectsState.errorMessage = error.name === 'AbortError'
+      ? '프로젝트를 불러올 수 없습니다. 응답 시간이 초과되었습니다. 다시 시도해 주세요.'
+      : error instanceof TypeError || error instanceof SyntaxError
+        ? '프로젝트를 불러올 수 없습니다. 네트워크 연결이나 응답을 확인한 뒤 다시 시도해 주세요.'
+        : error.message;
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
+  renderProjects();
+};
+
+projectsRetry.addEventListener('click', () => {
+  loadProjects();
+  // 재시도 버튼이 숨겨져도 키보드 초점은 상태 안내에 남깁니다.
+  projectsStatus.focus({ preventScroll: true });
+});
+
+loadProjects();
