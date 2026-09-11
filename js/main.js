@@ -293,7 +293,7 @@ const createProjectCard = (repo) => {
         <li>${escapeHTML(language || '언어 정보 없음')}</li>
         <li>별 ${stars}개</li>
       </ul>
-      <a class="project-link" href="${escapeHTML(repositoryURL)}" aria-label="${escapeHTML(name)} 저장소 보기">GitHub에서 보기 ↗</a>
+      <a class="project-link" href="${escapeHTML(repositoryURL)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHTML(name)} 저장소 새 탭에서 보기">GitHub에서 보기 ↗</a>
     </article>`;
 };
 
