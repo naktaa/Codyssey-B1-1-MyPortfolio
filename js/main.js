@@ -301,6 +301,7 @@ const renderProjects = () => {
   const { status, repos, errorMessage } = projectsState;
   projectsGrid.setAttribute('aria-busy', String(status === 'loading'));
   projectsStatus.classList.toggle('is-error', status === 'error');
+  projectsStatus.classList.toggle('is-loading', status === 'loading');
   projectsRetry.hidden = status !== 'error';
   projectsRetry.disabled = status === 'loading';
 
