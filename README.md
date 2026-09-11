@@ -2,9 +2,9 @@
 
 순수 HTML, CSS, JavaScript를 사용해 구현하는 반응형 포트폴리오 웹사이트입니다.
 
-> 현재 상태: **Stage 7 Contact 폼 유효성 검사 구현 — 사용자 검토 대기**
+> 현재 상태: **Stage 7 Contact 폼 유효성 검사 완료 — GitHub API 단계 예정**
 >
-> Stage 6까지 구현·확인했고, Contact 폼 검증을 추가했습니다. GitHub API는 후속 단계에서 구현합니다.
+> Stage 7까지 구현하고 사용자 검토를 마쳤습니다. 다음 단계는 GitHub API 연동입니다.
 
 ## Mission Goal
 
