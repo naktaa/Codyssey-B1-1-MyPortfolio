@@ -10,6 +10,7 @@
   --color-accent-hover: #294f36;
   --color-on-accent: #ffffff;
   --color-border: #dce3d9;
+  --color-error: #b42332;
   --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
   --space-1: 0.5rem;
   --space-2: 1rem;
@@ -34,6 +35,7 @@
   --color-accent-hover: #beddb8;
   --color-on-accent: #172019;
   --color-border: #484c50;
+  --color-error: #ff9da6;
   --shadow: 0 8px 28px rgb(0 0 0 / 15%);
   --shadow-hover: 0 12px 32px rgb(0 0 0 / 25%);
 }
@@ -474,6 +476,41 @@ section[id], footer[id] {
 .contact-form .button {
   justify-self: start;
 }
+.field-error {
+  color: var(--color-error);
+  font-size: 0.875rem;
+  margin-top: var(--space-1);
+  /* 오류가 없어도 한 줄 공간을 유지합니다. 이메일은 예시를 포함해 두 줄입니다. */
+  min-height: 1.75em;
+  line-height: 1.75;
+  white-space: pre-line;
+}
+#contact-email-error {
+  min-height: 3.5em;
+}
+.form-field [aria-invalid="true"] {
+  border-color: var(--color-error);
+}
+.form-field input, .form-field textarea {
+  scroll-margin-top: 6.5rem;
+}
+.form-feedback {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-2);
+}
+.form-status {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  /* 짧은 성공 문구가 모바일에서 두 줄이어도 행 높이를 유지합니다. */
+  min-height: 3.5em;
+  font-size: 0.875rem;
+  line-height: 1.75;
+  color: var(--color-accent);
+}
 .site-footer {
   display: flex;
   flex-direction: column;
@@ -531,7 +568,7 @@ section[id], footer[id] {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     padding: var(--space-4);
   }
-  .form-field:has(textarea), .contact-form .button {
+  .form-field:has(textarea) {
     grid-column: 1 / -1;
   }
   .site-footer {

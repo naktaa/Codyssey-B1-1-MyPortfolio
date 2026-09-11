@@ -84,22 +84,28 @@
 
       <section id="contact" aria-labelledby="contact-title">
         <div class="section-heading" data-reveal><p class="eyebrow">04 / CONTACT</p><h2 id="contact-title">함께 나누고 싶은 이야기가 있나요?</h2></div>
-        <p id="contact-description">이름, 이메일, 메시지를 입력하는 폼입니다. 현재 전송 기능은 준비 중입니다.</p>
+        <p id="contact-description">이름, 이메일, 메시지의 입력을 확인하는 데모 폼입니다. 실제 이메일은 전송되지 않습니다.</p>
         <form class="contact-form" aria-describedby="contact-description">
           <div class="form-field">
             <label for="contact-name">이름 (필수)</label>
-            <input id="contact-name" name="name" type="text" autocomplete="name" required>
+            <input id="contact-name" name="name" type="text" autocomplete="name" aria-describedby="contact-name-error" required>
+            <p id="contact-name-error" class="field-error" aria-live="polite"></p>
           </div>
           <div class="form-field">
             <label for="contact-email">이메일 (필수)</label>
-            <input id="contact-email" name="email" type="email" autocomplete="email" required>
+            <input id="contact-email" name="email" type="email" autocomplete="email" aria-describedby="contact-email-error" required>
+            <p id="contact-email-error" class="field-error" aria-live="polite"></p>
           </div>
           <div class="form-field">
             <label for="contact-message">메시지 (필수)</label>
-            <textarea id="contact-message" name="message" rows="6" required></textarea>
+            <textarea id="contact-message" name="message" rows="6" aria-describedby="contact-message-error" required></textarea>
+            <p id="contact-message-error" class="field-error" aria-live="polite"></p>
           </div>
-          <!-- 폼 검증과 submit 이벤트를 구현한 뒤 제출 버튼을 활성화합니다. -->
-          <button class="button" type="submit" disabled>보내기 (준비 중)</button>
+          <!-- JavaScript에서 검증 이벤트를 연결한 뒤 활성화합니다. -->
+          <div class="form-feedback">
+            <button class="button" type="submit" disabled>입력 확인</button>
+            <p class="form-status" role="status"></p>
+          </div>
         </form>
       </section>
     </main>
