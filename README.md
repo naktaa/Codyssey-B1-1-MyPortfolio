@@ -262,7 +262,7 @@ https://api.github.com/users/naktaa/repos?sort=updated&per_page=100
 - `renderProjectFilters()`: API 응답에 실제로 존재하는 언어만 버튼으로 만들고 선택 버튼의 `aria-pressed`와 스타일을 갱신합니다. loading/empty/error에서는 필터를 숨깁니다.
 - `getFilteredProjects()`: 전체를 선택하면 원본 배열을, 언어를 선택하면 `filter()` 결과를 반환합니다.
 - `renderProjects()`: 상태에 맞춰 안내의 `textContent`, 목록의 `innerHTML`, `aria-busy`, 재시도 버튼 표시를 갱신합니다. 정상 목록은 필터 결과에 `map(createProjectCard).join('')`을 적용합니다.
-- `createProjectCard()`: 구조분해로 이름·설명·언어·별 수를 꺼내 템플릿 리터럴로 article을 만듭니다. 설명과 언어가 null이면 대체 문구를 표시합니다.
+- `createProjectCard()`: 구조분해로 이름·설명·언어·별 수를 꺼내 템플릿 리터럴로 article을 만듭니다. 설명이 있으면 문단을 표시하고 비어 있으면 설명 요소를 생략합니다. 언어가 null이면 대체 문구를 표시합니다.
 - `escapeHTML()`: 외부 문자열의 &, <, >, 따옴표를 이스케이프해 태그로 실행되지 않게 합니다. 링크는 고정된 GitHub 도메인과 인코딩한 저장소 이름으로 구성합니다.
 - 재시도는 같은 `loadProjects()`를 호출합니다. 버튼이 숨겨지는 동안 키보드 초점은 상태 안내로 옮깁니다.
 

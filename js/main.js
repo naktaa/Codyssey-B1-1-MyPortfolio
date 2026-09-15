@@ -286,12 +286,13 @@ const createProjectCard = (repo) => {
   // 외부 응답의 URL을 그대로 쓰지 않고 GitHub 주소를 직접 구성합니다.
   const repositoryURL = `https://github.com/${GITHUB_USERNAME}/${encodeURIComponent(name)}`;
   const stars = Number.isInteger(stargazers_count) && stargazers_count >= 0 ? stargazers_count : 0;
+  const descriptionHTML = description ? `<p>${escapeHTML(description)}</p>` : '';
 
   return `
     <article class="project-card" data-reveal>
       <p class="project-category">GITHUB REPOSITORY</p>
       <h3>${escapeHTML(name)}</h3>
-      <p>${escapeHTML(description || '등록된 설명이 없습니다.')}</p>
+      ${descriptionHTML}
       <ul class="tech-tags" aria-label="저장소 정보">
         <li>${escapeHTML(language || '언어 정보 없음')}</li>
         <li>별 ${stars}개</li>
