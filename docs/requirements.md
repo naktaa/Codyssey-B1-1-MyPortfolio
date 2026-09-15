@@ -36,13 +36,13 @@ UI 완성도 자체보다 DOM 조작, 이벤트 처리, 비동기 API, 상태별
 - [x] 프로젝트 카드 등 적절한 위치에 `<article>` 사용
 - [x] `<footer>` 사용
 - [x] Hero 섹션: 인사말 + CTA 버튼
-- [ ] About 섹션: 자기소개 + 프로필 이미지
+- [x] About 섹션: 자기소개 + 프로필 이미지
 - [x] Skills 섹션: 기술 스택 목록
 - [x] Projects 섹션: GitHub API 결과
 - [x] Contact 섹션: 문의 폼
 - [x] Footer: 저작권 + 소셜 링크
 - [x] 네비게이션에 각 섹션 앵커 링크 제공
-- [ ] 모든 의미 있는 이미지에 적절한 `alt`
+- [x] 모든 의미 있는 이미지에 적절한 `alt`
 - [x] 폼의 `label for`와 입력 요소 `id`가 일치
 
 ### CSS
