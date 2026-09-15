@@ -396,6 +396,34 @@ section[id], footer[id] {
   color: var(--color-accent);
   font-size: 0.875rem;
 }
+.projects-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: var(--space-3);
+}
+.projects-filters[hidden] {
+  display: none;
+}
+.project-filter {
+  min-height: 2.5rem;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.project-filter:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+.project-filter.is-active {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
 .projects-status {
   display: flex;
   align-items: center;

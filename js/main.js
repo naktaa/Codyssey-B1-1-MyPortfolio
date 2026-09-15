@@ -262,7 +262,9 @@ renderContactForm();
 
 const GITHUB_USERNAME = 'naktaa';
 const PROJECTS_URL = `https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`;
+const ALL_PROJECT_LANGUAGES = 'all';
 const projectsGrid = document.querySelector('.projects-grid');
+const projectsFilters = document.querySelector('.projects-filters');
 const projectsStatus = document.querySelector('.projects-status');
 const projectsRetry = document.querySelector('.projects-retry');
 
@@ -270,6 +272,7 @@ const projectsState = {
   status: 'idle',
   repos: [],
   errorMessage: '',
+  selectedLanguage: ALL_PROJECT_LANGUAGES,
 };
 
 // API의 문자열이 HTML 태그나 속성으로 해석되지 않도록 변환합니다.
@@ -297,6 +300,42 @@ const createProjectCard = (repo) => {
     </article>`;
 };
 
+const getProjectLanguages = () => [...new Set(
+  projectsState.repos
+    .map(({ language }) => language)
+    .filter((language) => typeof language === 'string' && language.length > 0),
+)].sort((first, second) => first.localeCompare(second, 'en'));
+
+const getFilteredProjects = () => {
+  const { repos, selectedLanguage } = projectsState;
+  if (selectedLanguage === ALL_PROJECT_LANGUAGES) return repos;
+  return repos.filter(({ language }) => language === selectedLanguage);
+};
+
+const createProjectFilterButton = (language, label) => {
+  const isActive = projectsState.selectedLanguage === language;
+  return `<button class="project-filter${isActive ? ' is-active' : ''}" type="button" data-language="${escapeHTML(language)}" aria-pressed="${isActive}">${escapeHTML(label)}</button>`;
+};
+
+const renderProjectFilters = () => {
+  if (projectsState.status !== 'success') {
+    projectsFilters.hidden = true;
+    projectsFilters.innerHTML = '';
+    return;
+  }
+
+  const languages = getProjectLanguages();
+  if (projectsState.selectedLanguage !== ALL_PROJECT_LANGUAGES && !languages.includes(projectsState.selectedLanguage)) {
+    projectsState.selectedLanguage = ALL_PROJECT_LANGUAGES;
+  }
+
+  projectsFilters.innerHTML = [
+    createProjectFilterButton(ALL_PROJECT_LANGUAGES, '전체'),
+    ...languages.map((language) => createProjectFilterButton(language, language)),
+  ].join('');
+  projectsFilters.hidden = languages.length === 0;
+};
+
 const renderProjects = () => {
   const { status, repos, errorMessage } = projectsState;
   projectsGrid.setAttribute('aria-busy', String(status === 'loading'));
@@ -304,10 +343,14 @@ const renderProjects = () => {
   projectsStatus.classList.toggle('is-loading', status === 'loading');
   projectsRetry.hidden = status !== 'error';
   projectsRetry.disabled = status === 'loading';
+  renderProjectFilters();
 
   if (status === 'success') {
-    projectsGrid.innerHTML = repos.map(createProjectCard).join('');
-    projectsStatus.textContent = `${repos.length}개의 프로젝트를 불러왔습니다.`;
+    const filteredRepos = getFilteredProjects();
+    projectsGrid.innerHTML = filteredRepos.map(createProjectCard).join('');
+    projectsStatus.textContent = projectsState.selectedLanguage === ALL_PROJECT_LANGUAGES
+      ? `${repos.length}개의 프로젝트를 불러왔습니다.`
+      : `${projectsState.selectedLanguage} 프로젝트 ${filteredRepos.length}개를 표시하고 있습니다.`;
     observeRevealElements(projectsGrid.querySelectorAll('[data-reveal]'));
   } else {
     projectsGrid.innerHTML = '';
@@ -358,6 +401,23 @@ const loadProjects = async () => {
   }
   renderProjects();
 };
+
+projectsFilters.addEventListener('click', (event) => {
+  const filterButton = event.target.closest('.project-filter');
+  if (!filterButton || !projectsFilters.contains(filterButton)) return;
+
+  const { language } = filterButton.dataset;
+  const languages = getProjectLanguages();
+  const isValidLanguage = language === ALL_PROJECT_LANGUAGES || languages.includes(language);
+  if (!isValidLanguage || language === projectsState.selectedLanguage) return;
+
+  projectsState.selectedLanguage = language;
+  renderProjects();
+
+  const selectedButton = [...projectsFilters.querySelectorAll('.project-filter')]
+    .find((button) => button.dataset.language === language);
+  if (selectedButton) selectedButton.focus({ preventScroll: true });
+});
 
 projectsRetry.addEventListener('click', () => {
   loadProjects();
