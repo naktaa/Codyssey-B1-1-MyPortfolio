@@ -22,6 +22,7 @@
 ├── docs/
 │   ├── mission-original.md
 │   ├── requirements.md
+│   ├── study-notes.md
 │   ├── troubleshooting.md
 │   └── worklog.md
 └── evidence/
