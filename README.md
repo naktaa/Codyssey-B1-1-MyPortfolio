@@ -7,6 +7,26 @@
 - 배포 사이트: https://naktaa.github.io/Codyssey-B1-1-MyPortfolio/
 - GitHub 저장소: https://github.com/naktaa/Codyssey-B1-1-MyPortfolio
 
+## 프로젝트 구조
+
+```text
+.
+├── index.html
+├── css/
+│   └── style.css
+├── js/
+│   └── main.js
+├── images/
+│   ├── favicon.svg
+│   └── profile-cat.jpg
+├── docs/
+│   ├── mission-original.md
+│   ├── requirements.md
+│   ├── troubleshooting.md
+│   └── worklog.md
+└── evidence/
+```
+
 ## 사용 기술
 
 - HTML5
@@ -40,25 +60,12 @@ Contact 폼은 입력 검증 데모이며 실제 이메일은 전송하지 않�
 | Projects | API 요청·재시도 | loading/success/empty/error | 상태 안내, 카드, 재시도 버튼 갱신 |
 | 프로젝트 필터 | 필터 버튼 `click` | `selectedLanguage` 변경 | `filter()` 결과 카드와 개수 갱신 |
 
-## 프로젝트 구조
+## 구현 핵심
 
-```text
-.
-├── index.html
-├── css/
-│   └── style.css
-├── js/
-│   └── main.js
-├── images/
-│   ├── favicon.svg
-│   └── profile-cat.jpg
-├── docs/
-│   ├── mission-original.md
-│   ├── requirements.md
-│   ├── troubleshooting.md
-│   └── worklog.md
-└── evidence/
-```
+- **상태와 렌더링 분리:** 프레임워크 없이 기능별 상태를 변수·객체로 관리합니다. 이벤트에서 상태를 변경한 뒤 `renderTheme`, `renderMenu`, `renderContactForm`, `renderProjects`가 관련 DOM만 갱신합니다.
+- **테마 상태 유지:** `currentTheme`을 기준으로 `data-theme`과 버튼 정보를 렌더링하고, 선택값을 `localStorage`에 저장해 새로고침 후에도 복원합니다.
+- **Contact 검증:** `input`마다 해당 필드의 오류를 `contactState`에 반영하고, `submit`에서는 전체 필드를 다시 검사한 뒤 오류 또는 성공 상태를 렌더링합니다. 실제 이메일은 전송하지 않습니다.
+- **GitHub API 상태 처리:** 별도 백엔드 서버 없이 `loadProjects`가 GitHub REST API를 호출합니다. 요청 전 loading 상태를 먼저 렌더링하고, `fetch` 결과를 success·empty·error로 나눠 `renderProjects`에 전달합니다. 요청 제한, 비정상 응답, 네트워크 오류와 15초 시간 초과를 처리하며 오류 시 같은 요청을 재시도할 수 있습니다.
 
 ## 실행 방법
 
@@ -100,8 +107,10 @@ https://api.github.com/users/naktaa/repos?sort=updated&per_page=100
 
 ## 스크린샷
 
-최종 제출 전 아래 이미지를 `evidence/`에 추가합니다.
+| 데스크톱 밝은 모드 | 데스크톱 다크 모드 |
+| --- | --- |
+| ![데스크톱 밝은 모드 화면](evidence/desktop-light.png) | ![데스크톱 다크 모드 화면](evidence/desktop-dark.png) |
 
-- [ ] 데스크톱 밝은 모드 — `evidence/desktop-light.png`
-- [ ] 모바일 밝은 모드 — `evidence/mobile-light.png`
-- [ ] 데스크톱 다크 모드 — `evidence/desktop-dark.png`
+### 모바일 밝은 모드
+
+<img src="evidence/mobile-light.png" alt="모바일 밝은 모드에서 컴팩트 메뉴가 열린 화면" width="390">
