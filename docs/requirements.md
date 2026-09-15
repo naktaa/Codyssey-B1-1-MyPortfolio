@@ -162,17 +162,17 @@ UI 완성도 자체보다 DOM 조작, 이벤트 처리, 비동기 API, 상태별
 ### 배포 및 제출
 
 - [x] GitHub 저장소 생성/정리
-- [ ] GitHub Pages 배포
-- [ ] 배포 URL에서 전체 기능 재검증
-- [ ] 데스크톱 레이아웃 확인
-- [ ] 모바일 레이아웃 확인
-- [ ] 다크 모드 확인
-- [ ] 햄버거 메뉴 확인
-- [ ] 스크롤 기능 확인
-- [ ] GitHub API 확인
-- [ ] 폼 검증 확인
+- [x] GitHub Pages 배포
+- [x] 배포 URL에서 전체 기능 재검증
+- [x] 데스크톱 레이아웃 확인
+- [x] 모바일 레이아웃 확인
+- [x] 다크 모드 확인
+- [x] 햄버거 메뉴 확인
+- [x] 스크롤 기능 확인
+- [x] GitHub API 확인
+- [x] 폼 검증 확인
 - [x] GitHub 저장소 URL 제출 가능 상태
-- [ ] GitHub Pages URL 제출 가능 상태
+- [x] GitHub Pages URL 제출 가능 상태
 - [ ] 데스크톱 스크린샷 준비
 - [ ] 모바일 스크린샷 준비
 - [ ] 다크 모드 스크린샷 준비
@@ -190,7 +190,7 @@ UI 완성도 자체보다 DOM 조작, 이벤트 처리, 비동기 API, 상태별
 - [x] Scroll To Top 표시 기준값
 - [x] 스크롤 시 네비게이션 변경 기준값
 - [x] Intersection Observer threshold
-- [ ] GitHub Pages 배포 URL
+- [x] GitHub Pages 배포 URL
 - [ ] 스크린샷
 
 README는 구현 진행에 맞춰 갱신하며, 구현되지 않은 기능을 완료된 것처럼 쓰지 않는다.
@@ -280,7 +280,7 @@ HTML → CSS → 기본 이벤트 → 상태 → 폼 → 비동기 API 순서로
 - 프로필 이미지: `images/profile-cat.jpg`
 - Skills 목록: HTML, CSS, JavaScript
 - Footer 소셜 링크: GitHub
-- 디자인 방향: 밝은 아이보리와 초록색 포인트, 다크 모드는 차콜 계열이며 최종 색상 조정 예정
+- 디자인 방향: 밝은 아이보리와 초록색 포인트, 다크 모드는 차콜 계열
 - Scroll To Top 기준값: 300px
 - 네비게이션 스타일 변경 기준값: 60px
 - Intersection Observer threshold: 0.2
