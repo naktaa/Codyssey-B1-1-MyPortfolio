@@ -66,7 +66,7 @@ Contact 폼은 입력 검증 데모이며 실제 이메일은 전송하지 않�
 - **상태와 렌더링 분리:** 프레임워크 없이 기능별 상태를 변수·객체로 관리합니다. 이벤트에서 상태를 변경한 뒤 `renderTheme`, `renderMenu`, `renderContactForm`, `renderProjects`가 관련 DOM만 갱신합니다.
 - **테마 상태 유지:** `currentTheme`을 기준으로 `data-theme`과 버튼 정보를 렌더링하고, 선택값을 `localStorage`에 저장해 새로고침 후에도 복원합니다.
 - **Contact 검증:** `input`마다 해당 필드의 오류를 `contactState`에 반영하고, `submit`에서는 전체 필드를 다시 검사한 뒤 오류 또는 성공 상태를 렌더링합니다. 실제 이메일은 전송하지 않습니다.
-- **GitHub API 상태 처리:** 별도 백엔드 서버 없이 `loadProjects`가 GitHub REST API를 호출합니다. 요청 전 loading 상태를 먼저 렌더링하고, `fetch` 결과를 success·empty·error로 나눠 `renderProjects`에 전달합니다. 요청 제한, 비정상 응답, 네트워크 오류와 15초 시간 초과를 처리하며 오류 시 같은 요청을 재시도할 수 있습니다.
+- **GitHub API 상태 처리:** 별도 백엔드 서버 없이 `loadProjects`가 GitHub REST API를 호출합니다. 요청 전 loading 상태를 먼저 렌더링하고, `fetch` 결과를 success·empty·error로 나눠 `renderProjects`에 전달합니다. 403 요청 제한과 그 밖의 실패를 error 상태로 처리하며 같은 요청을 재시도할 수 있습니다.
 
 ## 실행 방법
 
@@ -87,10 +87,47 @@ https://api.github.com/users/naktaa/repos?sort=updated&per_page=100
 
 - `fetch`, `async/await`, `try/catch`, `response.ok` 사용
 - loading, success, empty, error 상태 구분
-- 403·429 요청 제한과 네트워크·시간 초과 오류 처리
+- 403 요청 제한 안내와 그 밖의 실패에 대한 공통 오류 안내
 - 오류 상태에서 같은 요청을 실행하는 재시도 버튼 제공
 - 저장소 Description이 없으면 설명 문단 생략
 - API 응답의 주 언어로 필터 버튼 생성
+
+### Projects 상태별 UI 확인
+
+Chrome Console에서 상태를 변경한 뒤 `renderProjects()`를 호출하면 API 요청 없이 각 UI를 확인할 수 있습니다. `success` 상태는 페이지 최초 로드 화면에서 확인합니다.
+
+```js
+// loading
+projectsState.status = 'loading';
+projectsState.repos = [];
+renderProjects();
+```
+
+```js
+// empty
+projectsState.status = 'empty';
+projectsState.repos = [];
+renderProjects();
+```
+
+```js
+// 일반 error
+projectsState.status = 'error';
+projectsState.repos = [];
+projectsState.errorMessage = '프로젝트를 불러올 수 없습니다. 잠시 후 다시 시도해 주세요.';
+renderProjects();
+```
+
+403 요청 제한 안내:
+
+```js
+projectsState.status = 'error';
+projectsState.repos = [];
+projectsState.errorMessage = '프로젝트를 불러올 수 없습니다. GitHub 요청 제한이 발생했습니다. 잠시 후 다시 시도해 주세요.';
+renderProjects();
+```
+
+확인 후 `location.reload()`로 정상 상태를 복구합니다. `다시 시도` 버튼은 실제 API를 호출합니다.
 
 ## 동작 기준값
 
