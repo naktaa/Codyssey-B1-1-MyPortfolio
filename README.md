@@ -4,9 +4,6 @@
 
 순수 HTML, CSS, JavaScript로 만든 손현석의 반응형 포트폴리오입니다. 프레임워크 없이 사용자 이벤트, 상태 변경, DOM 업데이트가 화면 변화로 이어지는 과정을 구현했습니다.
 
-- 배포 사이트: https://naktaa.github.io/Codyssey-B1-1-MyPortfolio/
-- GitHub 저장소: https://github.com/naktaa/Codyssey-B1-1-MyPortfolio
-
 ## 프로젝트 구조
 
 ```text
