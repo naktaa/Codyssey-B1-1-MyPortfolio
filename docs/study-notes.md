@@ -52,7 +52,7 @@ HTML은 파일에 작성한 마크업이고, DOM(Document Object Model)은 브�
 | `nav` | 섹션 이동 링크 모음 | [nav — index.html:14](../index.html#L14) |
 | `main` | 페이지의 핵심 콘텐츠 | [main — index.html:33](../index.html#L33) |
 | `section` | Hero, About, Skills, Projects, Contact 구분 | [Hero section — index.html:34](../index.html#L34) |
-| `article` | 독립적으로 이해할 수 있는 저장소 카드 | [동적 article — main.js:284](../js/main.js#L284) |
+| `article` | 독립적으로 이해할 수 있는 저장소 카드 | [동적 article — main.js:251](../js/main.js#L251) |
 | `footer` | 저작권과 소셜 링크 | [footer — index.html:108](../index.html#L108) |
 
 시맨틱 태그를 사용하면 개발자가 구조를 읽기 쉽고, 검색 엔진과 보조 기술도 각 영역의 역할을 더 잘 파악할 수 있다.
@@ -218,10 +218,10 @@ HTML의 `onclick` 속성을 사용하지 않았기 때문에 HTML은 구조, Jav
 
 | API | 역할 | 사용 위치 |
 | --- | --- | --- |
-| `textContent` | 요소 안의 글자를 안전하게 변경 | [폼 오류 문구 — main.js:219](../js/main.js#L219) |
-| `innerHTML` | HTML 문자열을 실제 요소로 생성 | [프로젝트 카드 목록 — main.js:340](../js/main.js#L340) |
-| `classList.add` | 클래스 추가 | [애니메이션 대기 — main.js:151](../js/main.js#L151) |
-| `classList.remove` | 클래스 제거 | [요소 표시 — main.js:163](../js/main.js#L163) |
+| `textContent` | 요소 안의 글자를 안전하게 변경 | [폼 오류 문구 — main.js:186](../js/main.js#L186) |
+| `innerHTML` | HTML 문자열을 실제 요소로 생성 | [프로젝트 카드 목록 — main.js:307](../js/main.js#L307) |
+| `classList.add` | 클래스 추가 | [애니메이션 대기 — main.js:155](../js/main.js#L155) |
+| `classList.remove` | 클래스 제거 | [요소 표시 — main.js:146](../js/main.js#L146) |
 | `classList.toggle` | 조건에 따라 클래스 추가·제거 | [메뉴 렌더링 — main.js:57](../js/main.js#L57) |
 | `setAttribute` | HTML 속성 변경 | [테마 렌더링 — main.js:25](../js/main.js#L25) |
 
@@ -307,7 +307,7 @@ CSS는 `.nav-list.active`일 때만 메뉴를 표시한다.
 
 [메뉴 닫기와 부드러운 이동 — main.js:63](../js/main.js#L63)  
 [Escape·바깥 클릭 — main.js:114](../js/main.js#L114)  
-[화면 폭 변경 — main.js:129](../js/main.js#L129)
+[화면 폭 변경 — main.js:127](../js/main.js#L127)
 
 ### 7.2 스크롤 상태
 
@@ -317,7 +317,7 @@ CSS는 `.nav-list.active`일 때만 메뉴를 표시한다.
 - 300px 이상: 맨 위로 버튼 표시
 
 [스크롤 기준값과 렌더링 — main.js:49](../js/main.js#L49)  
-[scroll 이벤트 연결 — main.js:140](../js/main.js#L140)
+[scroll 이벤트 연결 — main.js:132](../js/main.js#L132)
 
 스크롤 이벤트는 매우 자주 발생하므로 `{ passive: true }`로 브라우저에 기본 스크롤을 막지 않는 리스너임을 알려 준다.
 
@@ -327,7 +327,7 @@ CSS는 `.nav-list.active`일 때만 메뉴를 표시한다.
 
 스크롤 이벤트에서 모든 요소의 위치를 계속 계산하는 대신 Intersection Observer가 요소와 화면의 교차 상태를 알려 준다.
 
-[Observer 초기화 — main.js:146](../js/main.js#L146)
+[Observer 초기화 — main.js:138](../js/main.js#L138)
 
 1. HTML에서 애니메이션 대상에 `data-reveal`을 표시한다.
 2. JavaScript가 대상에 `reveal-pending` 클래스를 추가해 대기 상태로 만든다.
@@ -335,13 +335,15 @@ CSS는 `.nav-list.active`일 때만 메뉴를 표시한다.
 4. CSS transition으로 투명도와 위치가 부드럽게 바뀐다.
 5. `unobserve()`로 관찰을 끝내 애니메이션이 한 번만 실행되게 한다.
 
+관찰 대상은 HTML에 미리 있는 섹션 제목과 Skills 카드다. GitHub API로 나중에 생성되는 프로젝트 카드는 바로 표시해 동적 관찰 로직을 추가하지 않는다.
+
 [애니메이션 CSS — style.css:679](../css/style.css#L679)
 
 JavaScript가 실행되지 않거나 Intersection Observer를 지원하지 않아도 콘텐츠가 보이도록 **기본 CSS는 표시 상태**다. 관찰을 시작할 수 있을 때만 JavaScript가 숨김 클래스를 추가한다.
 
 사용자가 운영체제에서 동작 줄이기를 선택하면 애니메이션을 적용하지 않는다.
 
-[동작 줄이기 대응 — style.css:692](../css/style.css#L692)
+[동작 줄이기 대응 — style.css:687](../css/style.css#L687)
 
 ---
 
@@ -350,11 +352,11 @@ JavaScript가 실행되지 않거나 Intersection Observer를 지원하지 않�
 ### 관련 코드
 
 - [폼 HTML — index.html:80](../index.html#L80)
-- [폼 상태 — main.js:202](../js/main.js#L202)
-- [필드 검증 — main.js:207](../js/main.js#L207)
-- [폼 렌더링 — main.js:219](../js/main.js#L219)
-- [input 이벤트 — main.js:233](../js/main.js#L233)
-- [submit 이벤트 — main.js:242](../js/main.js#L242)
+- [폼 상태 — main.js:169](../js/main.js#L169)
+- [필드 검증 — main.js:174](../js/main.js#L174)
+- [폼 렌더링 — main.js:186](../js/main.js#L186)
+- [input 이벤트 — main.js:201](../js/main.js#L201)
+- [submit 이벤트 — main.js:209](../js/main.js#L209)
 
 ### 상태 구조
 
@@ -407,8 +409,8 @@ JavaScript가 API 결과에 따라 이 영역들의 내용과 표시 여부를 �
 
 ### 10.2 API 주소와 상태
 
-[API 주소와 DOM 선택 — main.js:263](../js/main.js#L263)  
-[Projects 상태 — main.js:271](../js/main.js#L271)
+[API 주소와 DOM 선택 — main.js:230](../js/main.js#L230)
+[Projects 상태 — main.js:238](../js/main.js#L238)
 
 ```js
 const projectsState = {
@@ -431,7 +433,7 @@ const projectsState = {
 
 ### 10.3 async/await와 fetch
 
-[API 요청 함수 — main.js:368](../js/main.js#L368)
+[API 요청 함수 — main.js:334](../js/main.js#L334)
 
 `fetch()`는 결과를 즉시 반환하지 않고 Promise를 반환한다. 네트워크 응답에는 시간이 걸리기 때문이다.
 
@@ -451,44 +453,41 @@ const projectsState = {
 8. 실패하면 catch에서 error 상태와 안내 문구를 저장한다.
 9. 마지막에 `renderProjects()`를 호출한다.
 
-중요한 점은 `fetch`가 404나 500 응답만으로는 항상 catch로 이동하지 않는다는 것이다. 그래서 `response.ok`를 직접 확인하고 오류를 발생시킨다.
+중요한 점은 `fetch`가 404나 500 응답만으로는 항상 catch로 이동하지 않는다는 것이다. 그래서 `response.ok`를 직접 확인하고 Projects 상태를 `error`로 변경한다.
 
-### 10.4 오류와 시간 초과
+### 10.4 오류 처리
 
-API 함수는 다음 경우를 구분한다.
+API 함수는 사용자에게 다음 두 종류의 안내를 제공한다.
 
-- 403·429: GitHub 요청 제한 또는 접근 제한
-- 그 밖의 HTTP 오류
-- JSON 형식 오류 또는 예상하지 못한 응답 구조
-- 네트워크 연결 실패
-- 15초 동안 응답하지 않는 시간 초과
+- 403: GitHub 요청 제한 안내
+- 그 밖의 HTTP·네트워크·JSON·응답 형식 실패: 공통 오류 안내
 
-`AbortController`가 15초 후 요청을 취소한다. `finally`는 성공과 실패 모두에서 타이머를 정리한다.
+`response.ok`가 `false`이면 HTTP 상태를 확인하고, 네트워크 요청이나 JSON 변환 중 발생한 실패는 `catch`에서 공통 오류 상태로 바꾼다. 미션 핵심 흐름을 분명하게 보여 주기 위해 별도의 요청 시간 제한은 두지 않는다.
 
-[시간 초과와 오류 처리 — main.js:375](../js/main.js#L375)
+[API 오류 처리 — main.js:341](../js/main.js#L341)
 
 오류 화면의 재시도 버튼은 새로운 로직을 만들지 않고 같은 `loadProjects()`를 다시 호출한다.
 
-[재시도 이벤트 — main.js:423](../js/main.js#L423)
+[재시도 이벤트 — main.js:378](../js/main.js#L378)
 
 ### 10.5 응답을 카드로 렌더링
 
-[카드 HTML 생성 — main.js:284](../js/main.js#L284)  
-[상태별 Projects 렌더링 — main.js:340](../js/main.js#L340)
+[카드 HTML 생성 — main.js:251](../js/main.js#L251)
+[상태별 Projects 렌더링 — main.js:307](../js/main.js#L307)
 
 `createProjectCard(repo)`는 저장소 객체 하나를 HTML 카드 문자열 하나로 변환한다. `map(createProjectCard)`는 전체 저장소 배열을 카드 문자열 배열로 바꾸고, `join('')`으로 합쳐 `innerHTML`에 넣는다.
 
 외부 API 데이터는 신뢰할 수 없는 입력으로 취급해야 한다. 저장소 이름과 설명을 그대로 `innerHTML`에 넣으면 문자열에 포함된 태그가 HTML로 해석될 수 있다. `escapeHTML()`로 특수 문자를 변환한 뒤 사용한다.
 
-[외부 문자열 이스케이프 — main.js:278](../js/main.js#L278)
+[외부 문자열 이스케이프 — main.js:246](../js/main.js#L246)
 
 저장소 링크도 API가 제공한 URL을 그대로 쓰지 않고, 확인된 GitHub 사용자명과 인코딩한 저장소 이름으로 직접 구성한다.
 
 ### 10.6 언어 필터
 
-[언어 목록 생성 — main.js:304](../js/main.js#L304)  
-[필터 적용 — main.js:310](../js/main.js#L310)  
-[필터 클릭 이벤트 — main.js:406](../js/main.js#L406)
+[언어 목록 생성 — main.js:271](../js/main.js#L271)
+[필터 적용 — main.js:277](../js/main.js#L277)
+[필터 클릭 이벤트 — main.js:361](../js/main.js#L361)
 
 1. `map`으로 각 저장소의 언어만 꺼낸다.
 2. `filter`로 언어 정보가 없는 값을 제거한다.
@@ -517,7 +516,7 @@ const getScrollBehavior = () => reducedMotionMedia.matches ? 'instant' : 'smooth
 
 백틱으로 문자열을 만들면 `${표현식}`으로 값을 넣고 여러 줄 HTML도 작성할 수 있다.
 
-[프로젝트 카드 템플릿 — main.js:291](../js/main.js#L291)
+[프로젝트 카드 템플릿 — main.js:258](../js/main.js#L258)
 
 ### 11.3 구조분해 할당
 
@@ -527,7 +526,7 @@ const { name, description, language, stargazers_count } = repo;
 
 객체에서 필요한 속성을 같은 이름의 변수로 한 번에 꺼낸다. `repo.name`을 반복하는 것보다 어떤 값을 사용할지 명확하다.
 
-[저장소 구조분해 — main.js:284](../js/main.js#L284)
+[저장소 구조분해 — main.js:251](../js/main.js#L251)
 
 ### 11.4 map, filter, forEach
 
@@ -537,8 +536,8 @@ const { name, description, language, stargazers_count } = repo;
 | `filter` | 조건을 통과한 항목의 **새 배열** 반환 | 선택 언어 저장소만 유지 |
 | `forEach` | 각 항목에 동작 수행, 새 배열이 목적은 아님 | 여러 링크에 이벤트 연결 |
 
-- [map으로 카드 생성 — main.js:351](../js/main.js#L351)
-- [filter로 프로젝트 선택 — main.js:310](../js/main.js#L310)
+- [map으로 카드 생성 — main.js:318](../js/main.js#L318)
+- [filter로 프로젝트 선택 — main.js:277](../js/main.js#L277)
 - [forEach로 이벤트 연결 — main.js:95](../js/main.js#L95)
 
 ---
@@ -552,14 +551,13 @@ const { name, description, language, stargazers_count } = repo;
 - 오류 발생 시 첫 번째 잘못된 입력으로 초점을 옮긴다.
 - API 로딩 상태를 `aria-busy`로 전달한다.
 - 재시도 후 사라지는 버튼 대신 상태 안내에 초점을 둔다.
-- 키보드 초점이 애니메이션으로 숨지 않도록 즉시 표시한다.
 - `prefers-reduced-motion` 사용자는 부드러운 이동과 애니메이션을 줄인다.
 - JavaScript가 꺼진 경우 Projects에 GitHub 링크 안내를 제공한다.
 
 [메뉴 접근성 속성 — index.html:16](../index.html#L16)  
 [폼 접근성 구조 — index.html:83](../index.html#L83)  
 [Projects 접근성 구조 — index.html:73](../index.html#L73)  
-[동작 줄이기 처리 — main.js:159](../js/main.js#L159)
+[동작 줄이기 처리 — main.js:141](../js/main.js#L141)
 
 ---
 

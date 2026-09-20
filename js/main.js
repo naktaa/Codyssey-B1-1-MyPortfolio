@@ -120,21 +120,13 @@ document.addEventListener('keydown', (event) => {
 
 document.addEventListener('click', (event) => {
   if (isMenuOpen && !navigation.contains(event.target)) {
-    const focusWasInMenu = navList.contains(document.activeElement);
     closeMenu();
-    if (focusWasInMenu) menuToggle.focus();
   }
 });
 
 desktopMedia.addEventListener('change', () => {
   // 화면을 넓혔다가 다시 줄여도 모바일 메뉴는 닫힌 상태로 시작합니다.
-  const focusedElement = document.activeElement;
   closeMenu();
-  if (desktopMedia.matches && focusedElement === menuToggle) {
-    navList.querySelector('a').focus();
-  } else if (!desktopMedia.matches && navList.contains(focusedElement)) {
-    menuToggle.focus();
-  }
 });
 
 window.addEventListener('scroll', updateScrollUI, { passive: true });
@@ -145,49 +137,24 @@ updateScrollUI();
 
 // 제목과 카드 단위로 관찰해 작은 화면에서도 기준 비율에 도달하도록 합니다.
 const REVEAL_THRESHOLD = 0.2;
-const revealElements = document.querySelectorAll('[data-reveal]');
-let revealObserver = null;
-
-const observeRevealElements = (elements) => {
-  if (!revealObserver) return;
-  elements.forEach((element) => {
-    element.classList.add('reveal-pending');
-    revealObserver.observe(element);
-  });
-};
 
 const initScrollReveal = () => {
   // 기본 상태는 표시이며, 애니메이션을 사용할 때만 숨김 상태로 준비합니다.
   if (reducedMotionMedia.matches || !('IntersectionObserver' in window)) return;
 
-  const showElement = (element) => {
-    element.classList.remove('reveal-pending');
-    observer.unobserve(element);
-  };
-
+  const revealElements = document.querySelectorAll('[data-reveal]');
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting && entry.intersectionRatio >= REVEAL_THRESHOLD) {
-        showElement(entry.target);
+        entry.target.classList.remove('reveal-pending');
+        observer.unobserve(entry.target);
       }
     });
   }, { threshold: REVEAL_THRESHOLD });
 
-  revealObserver = observer;
-  observeRevealElements(revealElements);
-
-  // 키보드로 초점을 옮긴 카드는 즉시 표시합니다.
-  document.addEventListener('focusin', (event) => {
-    const target = event.target.closest('[data-reveal]');
-    if (target) showElement(target);
-  });
-
-  reducedMotionMedia.addEventListener('change', () => {
-    if (reducedMotionMedia.matches) {
-      document.querySelectorAll('[data-reveal]').forEach(showElement);
-      observer.disconnect();
-      revealObserver = null;
-    }
+  revealElements.forEach((element) => {
+    element.classList.add('reveal-pending');
+    observer.observe(element);
   });
 };
 
@@ -289,7 +256,7 @@ const createProjectCard = (repo) => {
   const descriptionHTML = description ? `<p>${escapeHTML(description)}</p>` : '';
 
   return `
-    <article class="project-card" data-reveal>
+    <article class="project-card">
       <p class="project-category">GITHUB REPOSITORY</p>
       <h3>${escapeHTML(name)}</h3>
       ${descriptionHTML}
@@ -352,7 +319,6 @@ const renderProjects = () => {
     projectsStatus.textContent = projectsState.selectedLanguage === ALL_PROJECT_LANGUAGES
       ? `${repos.length}개의 프로젝트를 불러왔습니다.`
       : `${projectsState.selectedLanguage} 프로젝트 ${filteredRepos.length}개를 표시하고 있습니다.`;
-    observeRevealElements(projectsGrid.querySelectorAll('[data-reveal]'));
   } else {
     projectsGrid.innerHTML = '';
     if (status === 'loading') {
@@ -372,33 +338,22 @@ const loadProjects = async () => {
   projectsState.errorMessage = '';
   renderProjects();
 
-  const controller = new AbortController();
-  const timeoutId = window.setTimeout(() => controller.abort(), 15000);
-
   try {
-    const response = await fetch(PROJECTS_URL, { signal: controller.signal });
+    const response = await fetch(PROJECTS_URL);
     if (!response.ok) {
-      if (response.status === 403 || response.status === 429) {
-        throw new Error('프로젝트를 불러올 수 없습니다. GitHub 요청 제한 또는 접근 제한이 발생했습니다. 잠시 후 다시 시도해 주세요.');
-      }
-      throw new Error('프로젝트를 불러올 수 없습니다. 잠시 후 다시 시도해 주세요.');
+      projectsState.status = 'error';
+      projectsState.errorMessage = response.status === 403
+        ? '프로젝트를 불러올 수 없습니다. GitHub 요청 제한이 발생했습니다. 잠시 후 다시 시도해 주세요.'
+        : '프로젝트를 불러올 수 없습니다. 잠시 후 다시 시도해 주세요.';
+    } else {
+      const repos = await response.json();
+      if (!Array.isArray(repos)) throw new Error();
+      projectsState.repos = repos;
+      projectsState.status = repos.length > 0 ? 'success' : 'empty';
     }
-
-    const repos = await response.json();
-    if (!Array.isArray(repos) || !repos.every((repo) => repo && typeof repo.name === 'string' && repo.name.length > 0)) {
-      throw new Error('프로젝트를 불러올 수 없습니다. 응답 형식을 확인할 수 없습니다.');
-    }
-    projectsState.repos = repos;
-    projectsState.status = repos.length > 0 ? 'success' : 'empty';
-  } catch (error) {
+  } catch {
     projectsState.status = 'error';
-    projectsState.errorMessage = error.name === 'AbortError'
-      ? '프로젝트를 불러올 수 없습니다. 응답 시간이 초과되었습니다. 다시 시도해 주세요.'
-      : error instanceof TypeError || error instanceof SyntaxError
-        ? '프로젝트를 불러올 수 없습니다. 네트워크 연결이나 응답을 확인한 뒤 다시 시도해 주세요.'
-        : error.message;
-  } finally {
-    window.clearTimeout(timeoutId);
+    projectsState.errorMessage = '프로젝트를 불러올 수 없습니다. 잠시 후 다시 시도해 주세요.';
   }
   renderProjects();
 };

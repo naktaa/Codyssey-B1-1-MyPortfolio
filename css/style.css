@@ -684,11 +684,6 @@ section[id], footer[id] {
   opacity: 0;
   transform: translateY(16px);
 }
-.reveal-pending:focus-within {
-  opacity: 1;
-  transform: none;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .projects-status.is-loading::before {
     animation: none;
