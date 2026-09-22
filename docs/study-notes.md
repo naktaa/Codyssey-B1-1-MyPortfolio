@@ -59,23 +59,62 @@ HTML은 파일에 작성한 마크업이고, DOM(Document Object Model)은 브�
 
 Projects의 `article`은 초기 HTML에 직접 적혀 있지 않다. GitHub API 응답을 받은 뒤 `createProjectCard`가 문자열로 만들고 `innerHTML`로 DOM에 삽입한다. 따라서 개발자 도구의 Elements 패널에서는 카드가 `article`로 나타난다.
 
-### 2.3 앵커 링크와 id의 연결
+### 2.3 이미지와 영역의 접근 가능한 이름
+
+이미지의 `alt`는 이미지를 볼 수 없는 상황에서 내용과 목적을 전달하는 대체 텍스트다. 현재 프로필 사진은 자기소개 콘텐츠이므로 의미를 설명하는 `alt`를 작성했다.
+
+[프로필 이미지와 `alt` — index.html:48](../index.html#L48)
+
+`aria-labelledby="about-title"`은 About `section`의 이름을 `id="about-title"`인 제목에서 가져오라는 뜻이다. `aria-label`은 연결할 화면 텍스트가 없거나 별도 이름이 필요할 때 요소 자체에 이름을 직접 지정한다.
+
+- 섹션과 제목 연결: [`aria-labelledby`와 제목 `id` — index.html:45](../index.html#L45)
+- 내비게이션 이름 지정: [`aria-label="주요 메뉴"` — index.html:14](../index.html#L14)
+- 장식 문자를 읽지 않게 처리: [`aria-hidden="true"` — index.html:28](../index.html#L28)
+
+`aria-hidden="true"`는 달·화살표처럼 시각적인 장식이 버튼의 접근성 이름과 중복해 읽히지 않게 한다. 의미 있는 내용 전체를 감추는 용도로 사용하면 안 된다.
+
+### 2.4 앵커 링크와 id의 연결
 
 `href="#projects"`는 `id="projects"`인 요소를 가리킨다. 이 연결 덕분에 JavaScript가 없어도 브라우저의 기본 앵커 이동이 가능하다.
 
-- 내비게이션 링크: [index.html:19](../index.html#L19)
-- Projects 섹션: [index.html:67](../index.html#L67)
-- JavaScript 부드러운 이동: [moveToSection — main.js:70](../js/main.js#L70)
+- 링크의 목적지 지정: [Projects 메뉴 `href="#projects"` — index.html:23](../index.html#L23)
+- 목적지가 되는 요소: [Projects 섹션 `id="projects"` — index.html:67](../index.html#L67)
+- 클릭 이벤트 연결: [모든 내부 링크 순회 — main.js:95](../js/main.js#L95)
+- 기본 이동을 막고 목적지 전달: [`preventDefault()`와 `moveToSection()` — main.js:96](../js/main.js#L96)
+- 초점과 부드러운 스크롤 실행: [`moveToSection()` — main.js:70](../js/main.js#L70)
+- sticky 헤더에 가리지 않게 보정: [`scroll-margin-top` — style.css:222](../css/style.css#L222)
 
 JavaScript는 기본 이동을 `preventDefault()`로 막고 `scrollIntoView()`를 호출한다. Ctrl·Command 같은 보조키 클릭은 새 탭 등 브라우저 기본 동작을 유지하도록 예외 처리한다.
 
-### 2.4 폼 label과 입력 요소
+### 2.5 폼 label과 입력 요소
 
-`label`의 `for="contact-email"`과 입력 요소의 `id="contact-email"`이 같으면 라벨을 눌러도 입력창에 초점이 간다. 화면 읽기 프로그램도 라벨과 입력창의 관계를 이해할 수 있다.
+`label`의 `for="contact-email"`과 입력 요소의 `id="contact-email"`이 같으면 라벨을 눌러도 입력창에 초점이 간다. 이 동작은 JavaScript로 구현한 것이 아니라 브라우저가 제공하는 HTML 기본 동작이다. 화면 읽기 프로그램도 이 값의 일치를 보고 라벨과 입력창의 관계를 이해한다.
 
-[Contact 폼 구조 — index.html:80](../index.html#L80)
+- 이름 연결: [`for="contact-name"`과 `id="contact-name"` — index.html:85](../index.html#L85)
+- 이메일 연결: [`for="contact-email"`과 `id="contact-email"` — index.html:90](../index.html#L90)
+- 메시지 연결: [`for="contact-message"`와 `id="contact-message"` — index.html:95](../index.html#L95)
+- 키보드 초점의 시각적 테두리: [`:focus-visible` — style.css:102](../css/style.css#L102)
+- 제출 오류 시 JavaScript 초점 이동: [`firstInvalidField.focus()` — main.js:222](../js/main.js#L222)
 
-`aria-describedby="contact-email-error"`는 입력창과 오류 문구를 연결하고, `aria-live="polite"`는 오류 문구가 바뀌었음을 보조 기술에 무리 없이 전달한다.
+라벨 클릭과 잘못된 제출은 서로 다른 초점 이동이다. 라벨 클릭은 `for`와 `id`가 처리하고, 제출 후 첫 오류 필드로 이동하는 것은 JavaScript의 `focus()`가 처리한다. CSS의 `:focus-visible`은 초점을 이동시키지 않고 현재 키보드 초점이 어디 있는지를 테두리로 보여 준다.
+
+#### aria-describedby와 aria-live
+
+`aria-describedby`는 입력 요소와 그 입력을 보충 설명하는 요소를 `id`로 연결한다. 예를 들어 이메일 입력의 `aria-describedby="contact-email-error"`는 바로 다음 오류 문단의 `id="contact-email-error"`를 가리킨다.
+
+- 폼 전체와 폼 설명 연결: [`aria-describedby="contact-description"` — index.html:82](../index.html#L82)
+- 이메일 입력과 오류 문단 연결: [`aria-describedby`와 오류 `id` — index.html:91](../index.html#L91)
+- 세 오류 문단의 실시간 안내 설정: [`aria-live="polite"` — index.html:87](../index.html#L87)
+- 오류 문자열을 문단에 넣는 코드: [`textContent = error` — main.js:189](../js/main.js#L189)
+- 오류 여부를 입력 속성에 반영: [`aria-invalid` 갱신 — main.js:190](../js/main.js#L190)
+- 잘못된 입력의 테두리 색상: [`[aria-invalid="true"]` — style.css:558](../css/style.css#L558)
+
+`aria-live="polite"`는 JavaScript가 빈 오류 문단의 `textContent`를 바꾸면 화면 읽기 프로그램이 현재 안내를 무리하게 끊지 않고 변경된 문구를 읽게 한다. `aria-describedby`는 두 요소의 관계를 설명하고, `aria-live`는 설명 내용이 바뀐 사실을 알리므로 역할이 다르다.
+
+제출 성공 문구는 별도의 `<p role="status">`에 들어간다. `role="status"`도 상태 문구 변경을 보조 기술에 전달하는 live region 역할을 한다.
+
+- 성공 상태 문단: [`role="status"` — index.html:102](../index.html#L102)
+- 성공 문구 갱신: [`formStatus.textContent` — main.js:193](../js/main.js#L193)
 
 ---
 
@@ -85,10 +124,30 @@ JavaScript는 기본 이동을 `preventDefault()`로 막고 `scrollIntoView()`�
 
 CSS 선택자는 어떤 HTML 요소에 규칙을 적용할지 정한다.
 
-- `.project-card`: 해당 클래스를 가진 모든 프로젝트 카드
-- `.site-header.scrolled`: `site-header`와 `scrolled` 클래스를 동시에 가진 요소
-- `[data-theme="dark"]`: `data-theme` 속성값이 `dark`인 요소
-- `.scroll-top[hidden]`: `scroll-top` 클래스와 `hidden` 속성을 함께 가진 요소
+| 선택자 문법 | 읽는 방법 | 이 프로젝트의 연결 예 |
+| --- | --- | --- |
+| `body` | 해당 이름의 HTML 태그 | [`<body>` — index.html:12](../index.html#L12) ↔ [`body` — style.css:47](../css/style.css#L47) |
+| `.button` | 해당 `class`를 가진 요소 | [`class="button"` — index.html:39](../index.html#L39) ↔ [`.button` — style.css:283](../css/style.css#L283) |
+| `#contact-description` | 해당 `id`를 가진 한 요소 | [`id="contact-description"` — index.html:82](../index.html#L82) ↔ [`#contact-description` — style.css:512](../css/style.css#L512) |
+| `.form-field label` | `.form-field` 안에 있는 `label` | [폼 필드 구조 — index.html:84](../index.html#L84) ↔ [라벨 선택자 — style.css:519](../css/style.css#L519) |
+| `.site-header.scrolled` | 두 클래스를 동시에 가진 한 요소 | [기본 헤더 — index.html:13](../index.html#L13) ↔ [스크롤된 헤더 — style.css:125](../css/style.css#L125) |
+| `[aria-invalid="true"]` | 속성과 값이 일치하는 요소 | [속성 변경 — main.js:190](../js/main.js#L190) ↔ [오류 입력 CSS — style.css:558](../css/style.css#L558) |
+
+`.`은 `class`, `#`은 `id`, 대괄호는 속성을 찾는다. 선택자 사이에 공백이 있으면 앞 요소 **안에 있는** 뒤 요소를 찾고, `.site-header.scrolled`처럼 공백 없이 붙어 있으면 같은 요소가 두 클래스를 모두 가져야 한다.
+
+| CSS 선택자 | 일치하는 HTML/DOM | 값이 만들어지거나 바뀌는 위치 |
+| --- | --- | --- |
+| `.project-card` | `class="project-card"`인 프로젝트 카드 | [카드 HTML 문자열 — main.js:259](../js/main.js#L259) |
+| `.site-header.scrolled` | `site-header`와 `scrolled` 클래스를 모두 가진 헤더 | [HTML의 기본 클래스 — index.html:13](../index.html#L13), [스크롤에 따른 클래스 변경 — main.js:81](../js/main.js#L81) |
+| `[data-theme="dark"]` | `data-theme` 속성값이 `dark`인 요소 | [`<html>` 속성 변경 — main.js:27](../js/main.js#L27) |
+| `.scroll-top[hidden]` | `scroll-top` 클래스와 `hidden` 속성을 모두 가진 버튼 | [HTML의 버튼과 초기 `hidden` — index.html:114](../index.html#L114), [스크롤에 따른 `hidden` 변경 — main.js:87](../js/main.js#L87) |
+
+위 선택자 자체가 작성된 위치도 함께 보면 연결이 더 분명하다.
+
+- 프로젝트 카드 모양: [`.project-card` — style.css:353](../css/style.css#L353)
+- 스크롤된 헤더 모양: [`.site-header.scrolled` — style.css:125](../css/style.css#L125)
+- 다크 테마 변수: [`[data-theme="dark"]` — style.css:27](../css/style.css#L27)
+- 숨겨진 맨 위 버튼: [`.scroll-top[hidden]` — style.css:241](../css/style.css#L241)
 
 JavaScript가 클래스를 추가하거나 속성을 변경하면 다른 CSS 선택자가 일치하면서 화면 모양이 바뀐다. 이것이 JavaScript와 CSS가 협력하는 기본 방식이다.
 
@@ -103,6 +162,10 @@ JavaScript가 클래스를 추가하거나 속성을 변경하면 다른 CSS 선
 [다크 테마 변수 — style.css:27](../css/style.css#L27)
 
 예를 들어 `body`는 항상 `background: var(--color-bg)`를 사용한다. JavaScript가 `<html>`에 `data-theme="dark"`를 지정하면 `--color-bg` 값이 어두운 색으로 바뀌고, 그 변수를 사용하는 모든 요소가 함께 변경된다.
+
+- 테마를 바꾸는 HTML 버튼: [`.theme-toggle` — index.html:27](../index.html#L27)
+- 현재 테마를 `<html>` 속성에 반영: [`renderTheme()` — main.js:25](../js/main.js#L25)
+- 변수를 실제 배경과 글자색에 사용: [`body` — style.css:47](../css/style.css#L47)
 
 이 방식의 장점은 테마 변경 코드가 각 카드와 버튼을 하나씩 수정할 필요가 없다는 것이다.
 
@@ -126,8 +189,9 @@ JavaScript가 클래스를 추가하거나 속성을 변경하면 다른 CSS 선
 
 모바일에서는 `.nav-list`를 숨기고 햄버거 버튼을 표시한다. 768px 이상에서는 햄버거 버튼을 숨기고 메뉴 목록을 Flexbox로 표시한다.
 
-[모바일 메뉴 기본 상태 — style.css:145](../css/style.css#L145)  
-[데스크톱 메뉴 전환 — style.css:614](../css/style.css#L614)
+- [내비게이션 HTML 구조 — index.html:14](../index.html#L14)
+- [모바일 메뉴 기본 상태 — style.css:145](../css/style.css#L145)
+- [데스크톱 메뉴 전환 — style.css:614](../css/style.css#L614)
 
 모바일 퍼스트의 핵심은 작은 화면을 먼저 해결한 뒤 필요한 규칙만 넓은 화면에 추가하는 것이다.
 
@@ -155,7 +219,9 @@ grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
 
 카드에는 기본 그림자와 transition을 주고, hover 시 위로 조금 이동하면서 그림자가 강해지게 했다.
 
-[카드 효과 — style.css:353](../css/style.css#L353)
+- [카드 HTML 클래스 생성 — main.js:259](../js/main.js#L259)
+- [카드 기본 효과 — style.css:353](../css/style.css#L353)
+- [카드 hover 효과 — style.css:361](../css/style.css#L361)
 
 transition은 시작 상태와 끝 상태 사이를 브라우저가 부드럽게 계산하게 한다. hover는 마우스 환경의 피드백이고, 키보드 사용자를 위해 `:focus-visible`도 별도로 제공한다.
 
@@ -173,9 +239,9 @@ transition은 시작 상태와 끝 상태 사이를 브라우저가 부드럽게
 
 이 프로젝트에서 DOM 요소 참조와 설정값은 대부분 `const`이고, 테마와 메뉴처럼 값 자체가 바뀌는 상태는 `let`이다.
 
-[DOM 요소 상수 — main.js:1](../js/main.js#L1)  
-[변경되는 테마 상태 — main.js:23](../js/main.js#L23)  
-[변경되는 메뉴 상태 — main.js:54](../js/main.js#L54)
+- [DOM 요소 상수 — main.js:1](../js/main.js#L1)
+- [변경되는 테마 상태 — main.js:23](../js/main.js#L23)
+- [변경되는 메뉴 상태 — main.js:54](../js/main.js#L54)
 
 ### 4.2 querySelector와 querySelectorAll
 
@@ -188,8 +254,11 @@ const anchorLinks = document.querySelectorAll('a[href^="#"]');
 
 `anchorLinks`에는 여러 링크가 들어 있으므로 `forEach`로 하나씩 이벤트를 연결한다.
 
-[요소 선택 — main.js:1](../js/main.js#L1)  
-[앵커 이벤트 반복 연결 — main.js:95](../js/main.js#L95)
+- [HTML의 `.menu-toggle` 대상 — index.html:16](../index.html#L16)
+- [첫 요소와 여러 요소 선택 — main.js:1](../js/main.js#L1)
+- [앵커 이벤트 반복 연결 — main.js:95](../js/main.js#L95)
+
+`'.menu-toggle'`과 `'a[href^="#"]'`도 CSS에서 쓰는 것과 같은 선택자 문법이다. 전자는 클래스가 일치하는 첫 버튼을 찾고, 후자는 `href` 값이 `#`으로 시작하는 모든 내부 링크를 찾는다.
 
 ### 4.3 addEventListener
 
@@ -212,18 +281,22 @@ menuToggle.addEventListener('click', () => {
 
 [메뉴 클릭 이벤트 — main.js:90](../js/main.js#L90)
 
+- 이벤트를 받는 버튼: [`.menu-toggle` — index.html:16](../index.html#L16)
+- 상태가 반영되는 메뉴: [`.nav-list` — index.html:19](../index.html#L19)
+- `active` 클래스가 있을 때의 화면: [`.nav-list.active` — style.css:148](../css/style.css#L148)
+
 HTML의 `onclick` 속성을 사용하지 않았기 때문에 HTML은 구조, JavaScript는 동작이라는 역할 분리가 유지된다.
 
 ### 4.4 DOM을 변경하는 방법
 
 | API | 역할 | 사용 위치 |
 | --- | --- | --- |
-| `textContent` | 요소 안의 글자를 안전하게 변경 | [폼 오류 문구 — main.js:186](../js/main.js#L186) |
-| `innerHTML` | HTML 문자열을 실제 요소로 생성 | [프로젝트 카드 목록 — main.js:307](../js/main.js#L307) |
-| `classList.add` | 클래스 추가 | [애니메이션 대기 — main.js:155](../js/main.js#L155) |
-| `classList.remove` | 클래스 제거 | [요소 표시 — main.js:146](../js/main.js#L146) |
-| `classList.toggle` | 조건에 따라 클래스 추가·제거 | [메뉴 렌더링 — main.js:57](../js/main.js#L57) |
-| `setAttribute` | HTML 속성 변경 | [테마 렌더링 — main.js:25](../js/main.js#L25) |
+| `textContent` | 요소 안의 글자를 안전하게 변경 | [폼 오류 문구 — main.js:189](../js/main.js#L189) |
+| `innerHTML` | HTML 문자열을 실제 요소로 생성 | [프로젝트 카드 목록 — main.js:318](../js/main.js#L318) |
+| `classList.add` | 클래스 추가 | [애니메이션 대기 — main.js:156](../js/main.js#L156) |
+| `classList.remove` | 클래스 제거 | [요소 표시 — main.js:149](../js/main.js#L149) |
+| `classList.toggle` | 조건에 따라 클래스 추가·제거 | [메뉴 렌더링 — main.js:58](../js/main.js#L58) |
+| `setAttribute` | HTML 속성 변경 | [테마 렌더링 — main.js:27](../js/main.js#L27) |
 
 `textContent`는 글자를 HTML로 해석하지 않는다. `innerHTML`은 문자열을 HTML로 해석하므로 외부 API 값을 넣을 때 반드시 안전하게 처리해야 한다.
 
@@ -237,10 +310,10 @@ HTML의 `onclick` 속성을 사용하지 않았기 때문에 HTML은 구조, Jav
 
 | 기능 | 상태 | 렌더 함수 |
 | --- | --- | --- |
-| 테마 | `currentTheme` | `renderTheme()` |
-| 모바일 메뉴 | `isMenuOpen` | `renderMenu()` |
-| Contact | `contactState` | `renderContactForm()` |
-| Projects | `projectsState` | `renderProjects()` |
+| 테마 | [`currentTheme` — main.js:23](../js/main.js#L23) | [`renderTheme()` — main.js:25](../js/main.js#L25) |
+| 모바일 메뉴 | [`isMenuOpen` — main.js:54](../js/main.js#L54) | [`renderMenu()` — main.js:57](../js/main.js#L57) |
+| Contact | [`contactState` — main.js:169](../js/main.js#L169) | [`renderContactForm()` — main.js:186](../js/main.js#L186) |
+| Projects | [`projectsState` — main.js:238](../js/main.js#L238) | [`renderProjects()` — main.js:307](../js/main.js#L307) |
 
 상태를 사용하지 않고 이벤트 함수가 여러 DOM 요소를 직접 수정하면 다른 이벤트에서도 같은 코드를 반복하게 된다. 이 프로젝트는 이벤트 처리와 화면 출력을 분리해 흐름을 읽기 쉽게 만들었다.
 
@@ -260,12 +333,21 @@ textContent / innerHTML / classList / 속성 변경
 
 React 같은 라이브러리는 이 상태와 렌더링의 연결을 더 큰 규모에서 자동화한다. 이 프로젝트에서는 라이브러리 없이 직접 구현해 기본 원리를 확인한다.
 
+이 흐름은 다음 실제 코드 쌍에서 확인할 수 있다.
+
+- 테마: [클릭으로 상태 변경 — main.js:41](../js/main.js#L41) → [`renderTheme()` — main.js:25](../js/main.js#L25)
+- 메뉴: [클릭으로 상태 변경 — main.js:90](../js/main.js#L90) → [`renderMenu()` — main.js:57](../js/main.js#L57)
+- Contact: [`input`으로 오류 상태 변경 — main.js:200](../js/main.js#L200) → [`renderContactForm()` — main.js:186](../js/main.js#L186)
+- Projects: [API 결과로 요청 상태 변경 — main.js:334](../js/main.js#L334) → [`renderProjects()` — main.js:307](../js/main.js#L307)
+
 ---
 
 ## 6. 다크 모드와 localStorage
 
 ### 관련 코드
 
+- [테마 버튼 HTML — index.html:27](../index.html#L27)
+- [밝은·어두운 테마 CSS 변수 — style.css:2](../css/style.css#L2)
 - [저장값 읽기 — main.js:13](../js/main.js#L13)
 - [테마 상태 — main.js:23](../js/main.js#L23)
 - [화면 렌더링 — main.js:25](../js/main.js#L25)
@@ -285,6 +367,8 @@ React 같은 라이브러리는 이 상태와 렌더링의 연결을 더 큰 규
 
 저장소 접근이 차단될 수도 있어 읽기와 쓰기를 `try/catch`로 감쌌다. 저장에 실패하더라도 현재 페이지의 테마 전환은 계속 동작한다.
 
+화면 변화는 `renderTheme()`이 직접 모든 색을 바꿔서 생기는 것이 아니다. `data-theme` 속성 하나를 바꾸면 [`[data-theme="dark"]` 선택자 — style.css:27](../css/style.css#L27)의 변수들이 적용되고, [`body` 등에서 그 변수를 사용 — style.css:47](../css/style.css#L47)하기 때문에 여러 요소의 색이 함께 바뀐다.
+
 ---
 
 ## 7. 모바일 메뉴와 스크롤 기능
@@ -301,13 +385,15 @@ React 같은 라이브러리는 이 상태와 렌더링의 연결을 더 큰 규
 
 CSS는 `.nav-list.active`일 때만 메뉴를 표시한다.
 
-[컴팩트 모바일 메뉴 — style.css:148](../css/style.css#L148)
+- 메뉴 버튼과 제어 대상 `id`: [index.html:16](../index.html#L16)
+- 기본적으로 숨겨진 목록: [`.nav-list` — style.css:145](../css/style.css#L145)
+- `active`일 때 표시되는 목록: [`.nav-list.active` — style.css:148](../css/style.css#L148)
 
 메뉴 링크 선택, Escape, 메뉴 바깥 클릭, 화면 폭 변경에서도 `closeMenu()`를 재사용한다. 닫기 규칙을 한 함수에 모으면 모든 경로가 같은 상태 변경을 사용한다.
 
-[메뉴 닫기와 부드러운 이동 — main.js:63](../js/main.js#L63)  
-[Escape·바깥 클릭 — main.js:114](../js/main.js#L114)  
-[화면 폭 변경 — main.js:127](../js/main.js#L127)
+- [메뉴 닫기와 부드러운 이동 — main.js:63](../js/main.js#L63)
+- [Escape·바깥 클릭 — main.js:114](../js/main.js#L114)
+- [화면 폭 변경 — main.js:127](../js/main.js#L127)
 
 ### 7.2 스크롤 상태
 
@@ -316,10 +402,16 @@ CSS는 `.nav-list.active`일 때만 메뉴를 표시한다.
 - 60px 이상: 헤더에 `scrolled` 클래스 추가
 - 300px 이상: 맨 위로 버튼 표시
 
-[스크롤 기준값과 렌더링 — main.js:49](../js/main.js#L49)  
-[scroll 이벤트 연결 — main.js:132](../js/main.js#L132)
+- [스크롤 기준값과 렌더링 — main.js:49](../js/main.js#L49)
+- [scroll 이벤트 연결 — main.js:132](../js/main.js#L132)
+- [스크롤된 헤더 CSS — style.css:125](../css/style.css#L125)
+- [맨 위 버튼 HTML — index.html:114](../index.html#L114)
+- [`hidden` 버튼 CSS — style.css:241](../css/style.css#L241)
+- [맨 위 버튼 click 이벤트 — main.js:109](../js/main.js#L109)
 
 스크롤 이벤트는 매우 자주 발생하므로 `{ passive: true }`로 브라우저에 기본 스크롤을 막지 않는 리스너임을 알려 준다.
+
+스크롤할 때 헤더의 `scrolled` 클래스는 `classList.add()`와 `classList.remove()`로 바뀐다. 맨 위 버튼은 별도 클래스가 아니라 `hidden` 속성의 참·거짓이 바뀌며, CSS의 `.scroll-top[hidden]`이 이 속성을 보고 버튼을 숨긴다.
 
 ---
 
@@ -337,7 +429,11 @@ CSS는 `.nav-list.active`일 때만 메뉴를 표시한다.
 
 관찰 대상은 HTML에 미리 있는 섹션 제목과 Skills 카드다. GitHub API로 나중에 생성되는 프로젝트 카드는 바로 표시해 동적 관찰 로직을 추가하지 않는다.
 
-[애니메이션 CSS — style.css:679](../css/style.css#L679)
+- HTML의 관찰 표시: [`data-reveal` — index.html:46](../index.html#L46)
+- 관찰 대상 선택과 Observer 생성: [`initScrollReveal()` — main.js:141](../js/main.js#L141)
+- 대기 클래스 추가: [`classList.add('reveal-pending')` — main.js:156](../js/main.js#L156)
+- 화면 진입 후 클래스 제거: [`classList.remove('reveal-pending')` — main.js:149](../js/main.js#L149)
+- 대기·전환 CSS: [`[data-reveal]`과 `.reveal-pending` — style.css:679](../css/style.css#L679)
 
 JavaScript가 실행되지 않거나 Intersection Observer를 지원하지 않아도 콘텐츠가 보이도록 **기본 CSS는 표시 상태**다. 관찰을 시작할 수 있을 때만 JavaScript가 숨김 클래스를 추가한다.
 
@@ -351,12 +447,15 @@ JavaScript가 실행되지 않거나 Intersection Observer를 지원하지 않�
 
 ### 관련 코드
 
-- [폼 HTML — index.html:80](../index.html#L80)
+- [폼 설명과 폼 연결 — index.html:82](../index.html#L82)
+- [label·입력·오류 요소 — index.html:84](../index.html#L84)
+- [입력과 오류의 CSS — style.css:519](../css/style.css#L519)
 - [폼 상태 — main.js:169](../js/main.js#L169)
 - [필드 검증 — main.js:174](../js/main.js#L174)
 - [폼 렌더링 — main.js:186](../js/main.js#L186)
 - [input 이벤트 — main.js:201](../js/main.js#L201)
 - [submit 이벤트 — main.js:209](../js/main.js#L209)
+- [리스너 연결 후 폼 활성화 — main.js:225](../js/main.js#L225)
 
 ### 상태 구조
 
@@ -369,6 +468,18 @@ const contactState = {
 
 `errors`에는 필드별 오류 문구가 들어가고 `status`는 현재 제출 상태를 나타낸다. 빈 문자열은 오류가 없다는 뜻이다.
 
+상태와 DOM의 대응은 다음과 같다.
+
+| 상태 값 | 렌더링 위치 | 화면·접근성 변화 |
+| --- | --- | --- |
+| `errors[field.name]` | [`renderContactForm()` — main.js:186](../js/main.js#L186) | 오류 문단의 `textContent`와 입력의 `aria-invalid` 변경 |
+| 오류가 있는 `aria-invalid="true"` | [오류 입력 선택자 — style.css:558](../css/style.css#L558) | 입력 테두리가 오류 색으로 변경 |
+| `status === 'success'` | [성공 문구 분기 — main.js:193](../js/main.js#L193) | `role="status"` 문단에 `입력 확인 완료` 표시 |
+
+오류 문단은 내용이 없을 때도 최소 높이를 유지한다. 오류가 생겼다 사라질 때 아래 요소들이 크게 움직이지 않게 하기 위한 CSS다.
+
+[오류 문단 공간과 줄바꿈 — style.css:546](../css/style.css#L546)
+
 ### input 흐름
 
 1. 사용자가 한 필드의 내용을 바꾼다.
@@ -378,6 +489,8 @@ const contactState = {
 5. 이전 성공 결과는 현재 입력과 맞지 않으므로 상태를 `idle`로 되돌린다.
 6. `renderContactForm()`이 필드 근처 오류와 `aria-invalid`를 갱신한다.
 
+예를 들어 이메일을 잘못 입력하면 `validateContactField()`가 문자열을 반환하고, 그 문자열이 `contactState.errors.email`에 저장된다. 렌더 함수는 `field.id`가 `contact-email`인 것을 이용해 `#contact-email-error`를 찾은 뒤 오류 문구를 넣는다.
+
 ### submit 흐름
 
 1. `event.preventDefault()`로 실제 페이지 제출과 새로고침을 막는다.
@@ -385,6 +498,16 @@ const contactState = {
 3. 오류가 하나라도 있으면 상태를 `error`, 없으면 `success`로 바꾼다.
 4. 렌더 함수가 성공 문구 또는 필드별 오류를 표시한다.
 5. 오류가 있으면 첫 번째 잘못된 필드로 키보드 초점을 옮긴다.
+
+HTML에서는 JavaScript가 실행되기 전 제출되는 상황을 막기 위해 버튼을 처음에 `disabled`로 둔다. 이벤트 연결이 끝난 뒤 JavaScript가 브라우저 기본 검증 팝업을 끄고 버튼을 활성화하며 첫 화면을 렌더링한다.
+
+- 초기 비활성 버튼: [index.html:101](../index.html#L101)
+- 자체 오류 문구 사용과 버튼 활성화: [main.js:225](../js/main.js#L225)
+
+HTML의 `required`와 `type="email"`은 필수 입력과 이메일이라는 의미를 남긴다. 다만 이 프로젝트는 오류 문구와 상태 흐름을 직접 구현해 보기 위해 `contactForm.noValidate = true`로 브라우저 기본 팝업 제출 검증을 끄고 `validateContactField()`의 결과를 사용한다.
+
+- [필드 의미를 나타내는 HTML 속성 — index.html:86](../index.html#L86)
+- [직접 만든 검증 함수 — main.js:174](../js/main.js#L174)
 
 이 폼은 유효성 검사 학습용이다. 서버로 요청을 보내는 `fetch`, Formspree, EmailJS가 연결되어 있지 않으므로 실제 이메일은 전송되지 않는다.
 
@@ -398,19 +521,18 @@ const contactState = {
 
 HTML에는 처음부터 프로젝트 카드가 들어 있지 않고 다음 자리만 준비되어 있다.
 
-- 필터 영역
-- 상태 안내
-- 재시도 버튼
-- 카드가 들어갈 Grid
-
-[Projects HTML — index.html:67](../index.html#L67)
+- 필터 영역: [`.projects-filters` — index.html:73](../index.html#L73)
+- 상태 안내: [`.projects-status` — index.html:74](../index.html#L74)
+- 재시도 버튼: [`.projects-retry` — index.html:75](../index.html#L75)
+- 카드가 들어갈 Grid: [`.projects-grid` — index.html:76](../index.html#L76)
+- JavaScript가 없을 때의 안내: [`noscript` — index.html:77](../index.html#L77)
 
 JavaScript가 API 결과에 따라 이 영역들의 내용과 표시 여부를 바꾼다.
 
 ### 10.2 API 주소와 상태
 
-[API 주소와 DOM 선택 — main.js:230](../js/main.js#L230)
-[Projects 상태 — main.js:238](../js/main.js#L238)
+- [API 주소와 DOM 선택 — main.js:230](../js/main.js#L230)
+- [Projects 상태 — main.js:238](../js/main.js#L238)
 
 ```js
 const projectsState = {
@@ -430,6 +552,11 @@ const projectsState = {
 | `error` | HTTP·네트워크·응답 오류 | 오류 문구와 재시도 버튼 |
 
 성공과 실패만 구분하면 요청 중에 빈 화면이 보이고, 정상적으로 빈 응답도 오류처럼 처리하게 된다. 실제 서비스에서는 이 상태들을 나누는 것이 중요하다.
+
+상태가 실제 화면으로 바뀌는 분기는 [`renderProjects()` — main.js:307](../js/main.js#L307)에 모여 있다. `aria-busy`, 상태 클래스, 재시도 버튼, 필터, 카드 Grid와 안내 문구를 같은 `projectsState`를 기준으로 갱신한다.
+
+- 로딩 스피너와 오류 색상: [Projects 상태 CSS — style.css:432](../css/style.css#L432)
+- 재시도 버튼 숨김: [`.projects-retry[hidden]` — style.css:455](../css/style.css#L455)
 
 ### 10.3 async/await와 fetch
 
@@ -453,6 +580,8 @@ const projectsState = {
 8. 실패하면 catch에서 error 상태와 안내 문구를 저장한다.
 9. 마지막에 `renderProjects()`를 호출한다.
 
+페이지가 열릴 때 최초 요청을 시작하는 호출은 파일 마지막의 [`loadProjects()` — main.js:384](../js/main.js#L384)이다. 재시도 버튼도 같은 함수를 다시 호출하므로 최초 요청과 재요청이 한 흐름을 공유한다.
+
 중요한 점은 `fetch`가 404나 500 응답만으로는 항상 catch로 이동하지 않는다는 것이다. 그래서 `response.ok`를 직접 확인하고 Projects 상태를 `error`로 변경한다.
 
 ### 10.4 오류 처리
@@ -470,12 +599,17 @@ API 함수는 사용자에게 다음 두 종류의 안내를 제공한다.
 
 [재시도 이벤트 — main.js:378](../js/main.js#L378)
 
+버튼을 누르면 렌더링 과정에서 재시도 버튼 자체가 숨겨질 수 있다. 그래서 버튼에 남아 있던 초점을 상태 안내로 옮기고, 새 요청 상황을 키보드 사용자도 계속 확인할 수 있게 한다.
+
 ### 10.5 응답을 카드로 렌더링
 
-[카드 HTML 생성 — main.js:251](../js/main.js#L251)
-[상태별 Projects 렌더링 — main.js:307](../js/main.js#L307)
+- [카드 HTML 생성 — main.js:251](../js/main.js#L251)
+- [상태별 Projects 렌더링 — main.js:307](../js/main.js#L307)
 
 `createProjectCard(repo)`는 저장소 객체 하나를 HTML 카드 문자열 하나로 변환한다. `map(createProjectCard)`는 전체 저장소 배열을 카드 문자열 배열로 바꾸고, `join('')`으로 합쳐 `innerHTML`에 넣는다.
+
+- 카드가 배치되는 반응형 Grid: [`.projects-grid` — style.css:388](../css/style.css#L388)
+- 동적으로 생성되는 카드 모양: [`.project-card` — style.css:353](../css/style.css#L353)
 
 외부 API 데이터는 신뢰할 수 없는 입력으로 취급해야 한다. 저장소 이름과 설명을 그대로 `innerHTML`에 넣으면 문자열에 포함된 태그가 HTML로 해석될 수 있다. `escapeHTML()`로 특수 문자를 변환한 뒤 사용한다.
 
@@ -485,9 +619,12 @@ API 함수는 사용자에게 다음 두 종류의 안내를 제공한다.
 
 ### 10.6 언어 필터
 
-[언어 목록 생성 — main.js:271](../js/main.js#L271)
-[필터 적용 — main.js:277](../js/main.js#L277)
-[필터 클릭 이벤트 — main.js:361](../js/main.js#L361)
+- [언어 목록 생성 — main.js:271](../js/main.js#L271)
+- [필터 적용 — main.js:277](../js/main.js#L277)
+- [필터 버튼 HTML 생성 — main.js:283](../js/main.js#L283)
+- [필터 영역 렌더링 — main.js:288](../js/main.js#L288)
+- [필터 클릭 이벤트 — main.js:361](../js/main.js#L361)
+- [필터 버튼 CSS — style.css:404](../css/style.css#L404)
 
 1. `map`으로 각 저장소의 언어만 꺼낸다.
 2. `filter`로 언어 정보가 없는 값을 제거한다.
@@ -495,6 +632,7 @@ API 함수는 사용자에게 다음 두 종류의 안내를 제공한다.
 4. 필터 버튼을 만든다.
 5. 버튼 클릭 시 `selectedLanguage`를 바꾼다.
 6. `renderProjects()`가 선택 언어와 일치하는 저장소만 다시 그린다.
+7. 다시 만들어진 선택 버튼을 찾아 키보드 초점을 복원한다.
 
 필터링은 API를 다시 호출하지 않는다. 처음 받은 `projectsState.repos`에서 화면에 보여 줄 항목만 선택한다.
 
@@ -526,7 +664,7 @@ const { name, description, language, stargazers_count } = repo;
 
 객체에서 필요한 속성을 같은 이름의 변수로 한 번에 꺼낸다. `repo.name`을 반복하는 것보다 어떤 값을 사용할지 명확하다.
 
-[저장소 구조분해 — main.js:251](../js/main.js#L251)
+[저장소 구조분해 — main.js:252](../js/main.js#L252)
 
 ### 11.4 map, filter, forEach
 
@@ -546,18 +684,20 @@ const { name, description, language, stargazers_count } = repo;
 
 이 프로젝트의 기능은 마우스와 정상 네트워크만 가정하지 않는다.
 
-- 버튼 상태를 `aria-expanded`, `aria-pressed`로 전달한다.
-- 폼 오류를 `aria-describedby`, `aria-invalid`, `aria-live`로 연결한다.
-- 오류 발생 시 첫 번째 잘못된 입력으로 초점을 옮긴다.
-- API 로딩 상태를 `aria-busy`로 전달한다.
-- 재시도 후 사라지는 버튼 대신 상태 안내에 초점을 둔다.
-- `prefers-reduced-motion` 사용자는 부드러운 이동과 애니메이션을 줄인다.
-- JavaScript가 꺼진 경우 Projects에 GitHub 링크 안내를 제공한다.
+| 대비 항목 | HTML 준비 | JavaScript 또는 CSS 구현 |
+| --- | --- | --- |
+| 메뉴 열림 상태 | [`aria-expanded` — index.html:16](../index.html#L16) | [`renderMenu()`에서 값 변경 — main.js:57](../js/main.js#L57) |
+| 테마 선택 상태 | [`aria-pressed` — index.html:27](../index.html#L27) | [`renderTheme()`에서 값 변경 — main.js:25](../js/main.js#L25) |
+| 폼 오류 관계와 안내 | [`aria-describedby`, `aria-live` — index.html:86](../index.html#L86) | [`textContent`, `aria-invalid` 변경 — main.js:186](../js/main.js#L186) |
+| 첫 오류 필드 초점 | 입력 요소의 `id`와 `name` | [`firstInvalidField.focus()` — main.js:222](../js/main.js#L222) |
+| API 요청 중 상태 | [`aria-busy="false"` — index.html:76](../index.html#L76) | [상태에 따라 값 변경 — main.js:307](../js/main.js#L307) |
+| 재시도 후 초점 유지 | 상태 문단의 [`tabindex="-1"` — index.html:74](../index.html#L74) | [`projectsStatus.focus()` — main.js:381](../js/main.js#L381) |
+| 동작 줄이기 | 운영체제의 사용자 설정 | [이동·Observer 분기 — main.js:68](../js/main.js#L68), [transition·animation 제거 — style.css:687](../css/style.css#L687) |
+| JavaScript 미실행 | [`noscript` 안내 — index.html:77](../index.html#L77) | HTML만으로 GitHub 링크와 안내 제공 |
 
-[메뉴 접근성 속성 — index.html:16](../index.html#L16)  
-[폼 접근성 구조 — index.html:83](../index.html#L83)  
-[Projects 접근성 구조 — index.html:73](../index.html#L73)  
-[동작 줄이기 처리 — main.js:141](../js/main.js#L141)
+ARIA 속성은 대부분 화면 모양을 직접 바꾸지 않고 보조 기술에 의미와 상태를 전달한다. 다만 이 프로젝트의 `aria-invalid="true"`처럼 CSS 선택자로도 사용하면 시각적 오류 테두리까지 함께 적용할 수 있다.
+
+[ARIA 오류 상태를 사용하는 CSS — style.css:558](../css/style.css#L558)
 
 ---
 
@@ -571,12 +711,16 @@ const { name, description, language, stargazers_count } = repo;
 4. `<html>`을 선택하고 테마 버튼을 누른다.
 5. `data-theme` 값이 `light`와 `dark` 사이에서 바뀌는지 확인한다.
 
+코드 대조: [`renderMenu()` — main.js:57](../js/main.js#L57), [`renderTheme()` — main.js:25](../js/main.js#L25), [메뉴 CSS — style.css:145](../css/style.css#L145), [테마 CSS — style.css:27](../css/style.css#L27)
+
 ### localStorage
 
 1. Application → Local Storage를 연다.
 2. 테마 버튼을 누른다.
 3. `portfolio-theme` 값이 바뀌는지 확인한다.
 4. 새로고침 후에도 같은 테마인지 확인한다.
+
+코드 대조: [`getSavedTheme()` — main.js:13](../js/main.js#L13), [`saveTheme()` — main.js:33](../js/main.js#L33)
 
 ### GitHub API
 
@@ -585,12 +729,16 @@ const { name, description, language, stargazers_count } = repo;
 3. Status, Response, Timing을 확인한다.
 4. 로딩 중에는 `projectsState.status`가 loading이고 응답 후 success 또는 empty가 되는 흐름을 코드와 비교한다.
 
+코드 대조: [`projectsState` — main.js:238](../js/main.js#L238), [`renderProjects()` — main.js:307](../js/main.js#L307), [`loadProjects()` — main.js:334](../js/main.js#L334)
+
 ### Contact 상태
 
 1. 빈 상태로 입력 확인 버튼을 누른다.
 2. 필드 근처 오류와 첫 필드 초점 이동을 확인한다.
 3. 이메일 형식을 틀리게 입력한다.
 4. 정상 형식으로 수정할 때 해당 오류만 사라지는지 확인한다.
+
+코드 대조: [`validateContactField()` — main.js:174](../js/main.js#L174), [`renderContactForm()` — main.js:186](../js/main.js#L186), [`input`·`submit` 이벤트 — main.js:200](../js/main.js#L200)
 
 ---
 
@@ -600,29 +748,43 @@ const { name, description, language, stargazers_count } = repo;
 
 이벤트마다 DOM을 제각각 수정하지 않고 현재 상태를 먼저 정한 다음 렌더 함수가 화면을 책임지게 하기 위해서다. 상태 변화와 화면 결과를 추적하기 쉽고 같은 렌더 로직을 초기화, 클릭, API 결과에서 재사용할 수 있다.
 
+코드 예: [`projectsState` — main.js:238](../js/main.js#L238), [`renderProjects()` — main.js:307](../js/main.js#L307)
+
 ### 이 프로젝트에 백엔드가 있나요?
 
 직접 만든 백엔드는 없다. 브라우저가 GitHub REST API에 직접 요청하는 정적 프론트엔드다. 대신 비동기 요청, HTTP 오류, 응답 검증, 로딩·성공·빈·오류 상태처럼 서버 연동에 필요한 기본 흐름을 구현했다.
+
+코드 예: [`PROJECTS_URL` — main.js:230](../js/main.js#L230), [`fetch()` — main.js:342](../js/main.js#L342)
 
 ### fetch에 try/catch만 사용하면 HTTP 오류도 모두 잡히나요?
 
 아니다. fetch는 네트워크 자체가 실패하면 reject되지만 404나 500 같은 HTTP 응답은 Response 객체를 반환할 수 있다. 따라서 `response.ok`를 직접 확인해야 한다.
 
+코드 예: [`response.ok` 확인 — main.js:343](../js/main.js#L343)
+
 ### textContent와 innerHTML의 차이는 무엇인가요?
 
 `textContent`는 값을 글자로 취급하고 `innerHTML`은 HTML로 해석한다. 동적인 카드 마크업에는 innerHTML이 필요하지만, 외부 API 문자열은 태그로 해석되지 않도록 먼저 이스케이프한다.
+
+코드 예: [폼의 `textContent` — main.js:189](../js/main.js#L189), [카드의 `innerHTML` — main.js:318](../js/main.js#L318), [`escapeHTML()` — main.js:246](../js/main.js#L246)
 
 ### Flexbox와 Grid를 어디에 사용했나요?
 
 한 행 중심인 내비게이션에는 Flexbox를 사용했고, 화면 너비에 따라 여러 행과 열이 바뀌는 프로젝트 카드 목록에는 Grid의 `auto-fit`과 `minmax()`를 사용했다.
 
+코드 예: [내비게이션 Flexbox — style.css:129](../css/style.css#L129), [Projects Grid — style.css:388](../css/style.css#L388)
+
 ### localStorage는 서버 저장인가요?
 
 아니다. 현재 브라우저와 출처에 저장되는 문자열 저장소다. 다른 기기와 동기화되지 않으며 접근이 제한될 수도 있어 예외 처리를 했다.
 
+코드 예: [읽기 예외 처리 — main.js:13](../js/main.js#L13), [쓰기 예외 처리 — main.js:33](../js/main.js#L33)
+
 ### empty와 error 상태를 왜 나누나요?
 
 empty는 요청이 정상적으로 성공했지만 데이터가 없는 상태이고, error는 요청이나 응답 처리에 실패한 상태다. 원인과 사용자가 취할 행동이 다르므로 안내 UI도 달라야 한다.
+
+코드 예: [API 결과 상태 결정 — main.js:341](../js/main.js#L341), [상태별 문구 렌더링 — main.js:316](../js/main.js#L316)
 
 ---
 
