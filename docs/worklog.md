@@ -2,10 +2,10 @@
 
 ## 현재 상태
 
-- **현재 단계:** 14. main.js 핵심 함수 주석 보강
+- **현재 단계:** 15. 기능별 JavaScript 모듈 분리
 - **상태:** 검토 대기
-- **사용자 검토:** 핵심 함수 위의 한 줄 주석이 코드를 찾고 역할을 이해하는 데 도움이 되는지 확인 대기.
-- **다음 예정 작업:** 사용자가 `js/main.js`를 훑으며 주석의 양과 표현을 확인한다.
+- **사용자 검토:** 기능별 코드 구성, 기존 기능 및 Console 상태 확인 방식 복원 확인 대기.
+- **다음 예정 작업:** 테마·메뉴·스크롤·애니메이션·폼·Projects 및 문서 링크를 직접 확인한다.
 
 ---
 
@@ -288,3 +288,16 @@
 - **검증:** JavaScriptCore 문법 검사를 통과했다. 주석과 빈 줄을 제외한 실행 코드가 기존과 동일하고 `main.js`가 기존 384줄을 유지함을 확인했다. 학습 노트 코드 링크 225개의 파일·줄 범위 검사와 `git diff --check`도 통과했다.
 - **사용자 검토 결과:** 주석의 위치·양·표현 확인 대기.
 - **다음 작업:** 사용자 검토 결과에 따라 주석을 줄이거나 표현을 조정한다.
+
+## Stage 15. 기능별 JavaScript 모듈 분리
+
+- **상태:** 검토 대기
+- **후속 요청 반영:** Console 실습은 `window` 공개 대신 `export { projectsState, renderProjects }`와 동적 import 방식으로 변경했다. `const p = await import('./js/projects.js');` 후 `p.projectsState`와 `p.renderProjects()`로 확인한다. README·학습 노트·모듈 지침을 갱신했다. 최초 API 응답 후 실습하고 새로고침으로 복구한다.
+- **사용자 승인:** 제안한 기능별 모듈 분리를 시작하고 README 구조에서 JS 파일마다 오른쪽에 한 줄 기능 설명을 표시하도록 승인.
+- **구현 내용:** `main.js`는 다섯 초기화 함수의 import·호출만 담당한다. 테마, 내비게이션·스크롤, Observer, Contact, Projects를 별도 ES 모듈로 분리하고 초기화 함수를 export한다. Projects는 상태 실습용 export 두 개를 추가한다.
+- **주요 파일:** `js/main.js`, `js/theme.js`, `js/navigation.js`, `js/reveal.js`, `js/contact.js`, `js/projects.js`, `index.html`, `README.md`, `docs/study-notes.md`, `AGENTS.md`, `docs/worklog.md`
+- **설계 결정:** 기능별 상태·처리·렌더 함수는 같은 파일에 유지한다. 메뉴와 스크롤, API와 필터는 각각 연결된 기능으로 묶는다. 동작 줄이기 설정은 navigation과 reveal에서 각각 조회하여 모듈 간 의존성을 만들지 않는다. HTML에 `type="module"`을 추가하고 `defer`를 유지한다.
+- **문서 반영:** README 구조에 파일별 역할 설명, HTTP 실행 안내와 모듈 Scope에서의 중단점 기반 Projects 상태 확인 절차를 추가했다. 학습 노트의 기존 JS 코드 링크를 이동한 파일·줄에 맞춰 재연결하고 import·초기화 흐름을 설명했다.
+- **검증:** JavaScriptCore에서 실제 ES 모듈 import 및 모의 DOM·fetch 검사로 초기화, 테마 저장, 메뉴, 스크롤 UI·이동, 폼 오류·성공, API success/empty/403/네트워크 오류를 확인했다. 옮긴 원본 코드의 줄별 대응을 대조했고 학습 노트 코드 링크 225개의 파일·줄 범위 및 `git diff --check`를 확인했다. 실제 브라우저 렌더링 검토는 대기 중이다.
+- **사용자 검토 결과:** 확인 대기.
+- **다음 작업:** Live Server에서 기능과 모듈별 학습 동선을 검토한 후 수정 또는 완료 처리한다.

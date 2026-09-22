@@ -12,7 +12,12 @@
 ├── css/
 │   └── style.css
 ├── js/
-│   └── main.js
+│   ├── main.js        # 기능별 모듈을 불러와 초기화
+│   ├── theme.js       # 다크 모드 전환과 테마 저장·복원
+│   ├── navigation.js  # 모바일 메뉴, 섹션 이동, 스크롤 UI
+│   ├── reveal.js      # 화면 진입 시 요소 표시 애니메이션
+│   ├── contact.js     # 폼 입력 검사와 오류·성공 안내
+│   └── projects.js    # GitHub API 요청, 카드 표시, 언어 필터
 ├── images/
 │   ├── favicon.svg
 │   └── profile-cat.jpg
@@ -72,7 +77,7 @@ Contact 폼은 입력 검증 데모이며 실제 이메일은 전송하지 않�
 3. Live Server로 `index.html`을 실행합니다.
 4. 최신 Chrome에서 확인합니다.
 
-별도의 패키지 설치나 빌드 과정은 없습니다.
+별도의 패키지 설치나 빌드 과정은 없습니다. ES 모듈을 사용하므로 파일을 직접 여는 `file://` 대신 Live Server의 HTTP 주소로 실행합니다. `main.js`가 각 모듈의 초기화 함수를 한 번씩 호출합니다.
 
 ## GitHub Projects
 
@@ -91,40 +96,46 @@ https://api.github.com/users/naktaa/repos?sort=updated&per_page=100
 
 ### Projects 상태별 UI 확인
 
-Chrome Console에서 상태를 변경한 뒤 `renderProjects()`를 호출하면 API 요청 없이 각 UI를 확인할 수 있습니다. `success` 상태는 페이지 최초 로드 화면에서 확인합니다.
+최초 API 요청이 끝난 뒤 Chrome Console에서 모듈을 한 번 가져옵니다. 학습용으로 export한 상태 객체와 렌더 함수를 사용합니다.
+
+```js
+const p = await import('./js/projects.js');
+```
+
+이미 로드된 같은 모듈을 가져오므로 현재 화면의 상태를 공유하며 API를 다시 요청하지 않습니다. `p.initProjects()`는 다시 호출하지 않습니다. 같은 페이지에서는 아래 예제만 이어서 실행하고, 새로고침 후에는 import부터 다시 실행합니다. 요청 중에 상태를 바꾸면 응답이 화면을 덮어쓸 수 있습니다. `success`는 정상 로드한 화면에서 확인합니다.
 
 ```js
 // loading
-projectsState.status = 'loading';
-projectsState.repos = [];
-renderProjects();
+p.projectsState.status = 'loading';
+p.projectsState.repos = [];
+p.renderProjects();
 ```
 
 ```js
 // empty
-projectsState.status = 'empty';
-projectsState.repos = [];
-renderProjects();
+p.projectsState.status = 'empty';
+p.projectsState.repos = [];
+p.renderProjects();
 ```
 
 ```js
 // 일반 error
-projectsState.status = 'error';
-projectsState.repos = [];
-projectsState.errorMessage = '프로젝트를 불러올 수 없습니다. 잠시 후 다시 시도해 주세요.';
-renderProjects();
+p.projectsState.status = 'error';
+p.projectsState.repos = [];
+p.projectsState.errorMessage = '프로젝트를 불러올 수 없습니다. 잠시 후 다시 시도해 주세요.';
+p.renderProjects();
 ```
 
 403 요청 제한 안내:
 
 ```js
-projectsState.status = 'error';
-projectsState.repos = [];
-projectsState.errorMessage = '프로젝트를 불러올 수 없습니다. GitHub 요청 제한이 발생했습니다. 잠시 후 다시 시도해 주세요.';
-renderProjects();
+p.projectsState.status = 'error';
+p.projectsState.repos = [];
+p.projectsState.errorMessage = '프로젝트를 불러올 수 없습니다. GitHub 요청 제한이 발생했습니다. 잠시 후 다시 시도해 주세요.';
+p.renderProjects();
 ```
 
-확인 후 `location.reload()`로 정상 상태를 복구합니다. `다시 시도` 버튼은 실제 API를 호출합니다.
+확인 후 `location.reload()` 또는 새로고침으로 정상 상태를 복구합니다. `다시 시도` 버튼은 실제 API를 호출합니다.
 
 ## 동작 기준값
 
