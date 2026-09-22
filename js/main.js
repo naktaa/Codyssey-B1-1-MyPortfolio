@@ -9,7 +9,7 @@ const themeToggle = document.querySelector('.theme-toggle');
 const themeIcon = document.querySelector('.theme-icon');
 
 const THEME_STORAGE_KEY = 'portfolio-theme';
-
+// 저장된 테마를 읽고, 사용할 수 없으면 밝은 테마로 시작합니다.
 const getSavedTheme = () => {
   try {
     const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
@@ -21,7 +21,7 @@ const getSavedTheme = () => {
 };
 
 let currentTheme = getSavedTheme();
-
+// 현재 테마 상태를 HTML 속성과 토글 버튼 표시에 반영합니다.
 const renderTheme = () => {
   const isDark = currentTheme === 'dark';
   document.documentElement.setAttribute('data-theme', currentTheme);
@@ -29,7 +29,7 @@ const renderTheme = () => {
   themeToggle.setAttribute('title', isDark ? '밝은 모드로 전환' : '다크 모드로 전환');
   themeIcon.textContent = isDark ? '☀' : '☾';
 };
-
+// 선택한 테마를 새로고침 후에도 유지하도록 브라우저에 저장합니다.
 const saveTheme = () => {
   try {
     window.localStorage.setItem(THEME_STORAGE_KEY, currentTheme);
@@ -64,9 +64,9 @@ const closeMenu = () => {
   isMenuOpen = false;
   renderMenu();
 };
-
+// 사용자 동작 줄이기 설정에 따라 즉시 이동과 부드러운 이동을 선택합니다.
 const getScrollBehavior = () => reducedMotionMedia.matches ? 'instant' : 'smooth';
-
+// 앵커가 가리키는 섹션으로 키보드 초점과 스크롤을 함께 이동합니다.
 const moveToSection = (target) => {
   // 닫힌 모바일 메뉴에 초점이 남지 않도록 목적지로 옮깁니다.
   // tabindex=-1은 일반 Tab 순서에 섹션을 추가하지 않습니다.
@@ -74,7 +74,7 @@ const moveToSection = (target) => {
   target.focus({ preventScroll: true });
   target.scrollIntoView({ behavior: getScrollBehavior(), block: 'start' });
 };
-
+// 현재 스크롤 위치에 맞춰 헤더와 맨 위로 버튼의 표시 상태를 갱신합니다.
 const updateScrollUI = () => {
   const scrollPosition = window.scrollY;
 
@@ -170,7 +170,7 @@ const contactState = {
   errors: { name: '', email: '', message: '' },
   status: 'idle',
 };
-
+// 입력값을 검사하고, 문제가 있으면 해당 필드의 오류 문구를 반환합니다.
 const validateContactField = (field) => {
   const { name, value } = field;
   const trimmedValue = value.trim();
@@ -182,7 +182,7 @@ const validateContactField = (field) => {
   }
   return '';
 };
-
+// Contact 상태를 필드별 오류, 접근성 속성, 성공 문구에 반영합니다.
 const renderContactForm = () => {
   contactFields.forEach((field) => {
     const error = contactState.errors[field.name];
@@ -241,13 +241,13 @@ const projectsState = {
   errorMessage: '',
   selectedLanguage: ALL_PROJECT_LANGUAGES,
 };
-
+// GitHub API 응답을 안전한 카드 HTML과 언어 필터 데이터로 가공합니다.
 // API의 문자열이 HTML 태그나 속성으로 해석되지 않도록 변환합니다.
 const escapeHTML = (value) => {
   const entities = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
   return String(value).replace(/[&<>"']/g, (character) => entities[character]);
 };
-
+// GitHub 저장소 한 개를 Projects 영역에 넣을 카드 HTML로 변환합니다.
 const createProjectCard = (repo) => {
   const { name, description, language, stargazers_count } = repo;
   // 외부 응답의 URL을 그대로 쓰지 않고 GitHub 주소를 직접 구성합니다.
@@ -267,7 +267,7 @@ const createProjectCard = (repo) => {
       <a class="project-link" href="${escapeHTML(repositoryURL)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHTML(name)} 저장소 새 탭에서 보기">GitHub에서 보기 ↗</a>
     </article>`;
 };
-
+// 전체 저장소에서 중복을 제거한 언어 필터 목록을 만듭니다.
 const getProjectLanguages = () => [...new Set(
   projectsState.repos
     .map(({ language }) => language)
@@ -284,7 +284,7 @@ const createProjectFilterButton = (language, label) => {
   const isActive = projectsState.selectedLanguage === language;
   return `<button class="project-filter${isActive ? ' is-active' : ''}" type="button" data-language="${escapeHTML(language)}" aria-pressed="${isActive}">${escapeHTML(label)}</button>`;
 };
-
+// Projects 요청 상태와 저장소 언어에 맞춰 필터 버튼을 다시 그립니다.
 const renderProjectFilters = () => {
   if (projectsState.status !== 'success') {
     projectsFilters.hidden = true;
@@ -303,7 +303,7 @@ const renderProjectFilters = () => {
   ].join('');
   projectsFilters.hidden = languages.length === 0;
 };
-
+// Projects 상태에 따라 로딩·성공·빈 목록·오류 화면을 갱신합니다.
 const renderProjects = () => {
   const { status, repos, errorMessage } = projectsState;
   projectsGrid.setAttribute('aria-busy', String(status === 'loading'));
@@ -330,7 +330,7 @@ const renderProjects = () => {
     }
   }
 };
-
+// GitHub API를 요청하고 결과를 Projects 상태에 저장한 뒤 화면을 다시 그립니다.
 const loadProjects = async () => {
   if (projectsState.status === 'loading') return;
   projectsState.status = 'loading';
