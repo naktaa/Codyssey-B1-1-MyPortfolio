@@ -19,6 +19,7 @@
 │   ├── contact.js     # 폼 입력 검사와 오류·성공 안내
 │   └── projects.js    # GitHub API 요청, 카드 표시, 언어 필터
 ├── images/
+│   ├── b1-1-architecture.svg
 │   ├── favicon.svg
 │   └── profile-cat.jpg
 ├── docs/
@@ -29,6 +30,12 @@
 │   └── worklog.md
 └── evidence/
 ```
+
+### 동작 구조
+
+HTML과 CSS가 DOM·CSSOM을 만들고, JavaScript가 사용자 이벤트에 따라 DOM을 갱신해 화면을 다시 그리는 흐름입니다.
+
+![브라우저에서 HTML, CSS, JavaScript가 화면을 구성하고 사용자 이벤트로 갱신되는 흐름](images/b1-1-architecture.svg)
 
 ## 사용 기술
 
