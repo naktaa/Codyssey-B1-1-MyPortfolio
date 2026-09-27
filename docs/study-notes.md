@@ -28,7 +28,7 @@
 
 각 파일의 상태와 렌더 함수는 모듈 내부에서만 사용한다. 초기화 함수 안에는 이벤트 연결과 첫 화면 준비만 모으고, 검증·렌더 함수는 별도로 유지했다. 기능별 코드의 읽는 순서는 DOM 선택 → 상태 → 처리·렌더 함수 → 초기화 함수다.
 
-실행은 Live Server의 HTTP 주소를 사용한다. 모듈 내부 상태는 기본적으로 일반 Console에서 직접 접근할 수 없다. Projects는 학습용으로 `projectsState`와 `renderProjects`도 export한다. 최초 API 요청이 끝난 뒤 Console에서 `const p = await import('./js/projects.js');`로 가져와 `p.projectsState`를 변경하고 `p.renderProjects()`를 호출한다. 같은 모듈의 상태를 공유하며 초기화 함수를 다시 호출하지 않는다. 실습 후 새로고침으로 복구한다. Projects 상태별 실습 순서는 [README](../README.md)에 있다.
+실행은 Live Server의 HTTP 주소를 사용한다. 모듈 내부 상태는 기본적으로 일반 Console에서 직접 접근할 수 없다. Projects는 학습용으로 `projectsState`와 `renderProjects`도 export한다. 최초 API 요청이 끝난 뒤 Console에서 `const p = await import('./js/projects.js');`로 가져와 `p.projectsState`를 변경하고 `p.renderProjects()`를 호출한다. 같은 모듈의 상태를 공유하며 초기화 함수를 다시 호출하지 않는다. 실습 후 새로고침으로 복구한다. Projects 상태별 실습 순서는 [Projects 상태별 UI 확인](#projects-state-practice)에 있다.
 
 이 미션에서 가장 중요한 문장은 다음과 같다.
 
@@ -590,6 +590,23 @@ const projectsState = {
 
 중요한 점은 `fetch`가 404나 500 응답만으로는 항상 catch로 이동하지 않는다는 것이다. 그래서 `response.ok`를 직접 확인하고 Projects 상태를 `error`로 변경한다.
 
+<a id="async-execution"></a>
+
+#### 비동기 실행과 마이크로태스크
+
+[README의 이벤트 루프 개념도](../README.md#비동기-요청과-화면-갱신)를 실제 `loadProjects()`와 연결하면 다음 순서로 동작한다. 그림에서 생략된 마이크로태스크도 함께 설명한다.
+
+1. 호출 스택에서 `loadProjects()`가 실행되어 loading 상태를 설정하고 DOM을 갱신한다.
+2. `fetch()`가 요청을 시작하고 Promise를 반환한다. `await`에서 함수 실행이 중단되어 호출자에게 제어가 돌아간다.
+3. 네트워크 대기 중에는 다른 이벤트 처리와 브라우저 렌더링이 가능하다. `await` 자체가 화면 그리기를 보장하는 것은 아니다.
+4. 응답을 받으면 Promise가 이행되고, 중단된 함수의 후속 실행이 마이크로태스크로 예약된다. 호출 스택이 비고 마이크로태스크를 처리하는 시점에 `response.ok` 확인으로 이어진다.
+5. `await response.json()`에서도 본문 읽기와 JSON 변환 결과를 기다린 뒤 마이크로태스크로 실행을 재개한다. 거부된 Promise를 기다리면 예외가 발생해 `catch`로 이동한다.
+6. 상태를 결정하고 `renderProjects()`가 DOM을 갱신한다. 실제 화면 그리기는 브라우저의 렌더링 시점에 이루어진다.
+
+사용자 클릭이나 타이머에 관련된 태스크와 Promise 후속 실행을 처리하는 마이크로태스크는 구분한다. `fetch → 일반 Callback Queue → 실행`으로만 그리면 `await` 이후의 실행 원리가 빠진다. 또한 DOM API 전체가 비동기인 것은 아니며, 이 프로젝트의 `innerHTML`·`textContent` 대입은 동기적으로 DOM을 변경한다.
+
+참고: [MDN — await의 실행 흐름](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await#control_flow_effects_of_await), [MDN — 마이크로태스크](https://developer.mozilla.org/en-US/docs/Web/API/HTML_DOM_API/Microtask_guide).
+
 ### 10.4 오류 처리
 
 API 함수는 사용자에게 다음 두 종류의 안내를 제공한다.
@@ -736,6 +753,53 @@ ARIA 속성은 대부분 화면 모양을 직접 바꾸지 않고 보조 기술�
 4. 로딩 중에는 `projectsState.status`가 loading이고 응답 후 success 또는 empty가 되는 흐름을 코드와 비교한다.
 
 코드 대조: [`projectsState` — projects.js:9](../js/projects.js#L9), [`renderProjects()` — projects.js:78](../js/projects.js#L78), [`loadProjects()` — projects.js:105](../js/projects.js#L105)
+
+<a id="projects-state-practice"></a>
+
+### Projects 상태별 UI 확인
+
+아래 실습은 상태와 DOM을 직접 변경하는 UI 확인이며 실제 HTTP 응답이나 오류 처리 경로를 검증하지는 않습니다.
+
+최초 API 요청이 끝난 뒤 Chrome Console에서 모듈을 한 번 가져옵니다. 학습용으로 export한 상태 객체와 렌더 함수를 사용합니다.
+
+```js
+const p = await import('./js/projects.js');
+```
+
+이미 로드된 같은 모듈을 가져오므로 현재 화면의 상태를 공유하며 API를 다시 요청하지 않습니다. `p.initProjects()`는 다시 호출하지 않습니다. 같은 페이지에서는 아래 예제만 이어서 실행하고, 새로고침 후에는 import부터 다시 실행합니다. 요청 중에 상태를 바꾸면 응답이 화면을 덮어쓸 수 있습니다. `success`는 정상 로드한 화면에서 확인합니다.
+
+```js
+// loading
+p.projectsState.status = 'loading';
+p.projectsState.repos = [];
+p.renderProjects();
+```
+
+```js
+// empty
+p.projectsState.status = 'empty';
+p.projectsState.repos = [];
+p.renderProjects();
+```
+
+```js
+// 일반 error
+p.projectsState.status = 'error';
+p.projectsState.repos = [];
+p.projectsState.errorMessage = '프로젝트를 불러올 수 없습니다. 잠시 후 다시 시도해 주세요.';
+p.renderProjects();
+```
+
+403 요청 제한 안내:
+
+```js
+p.projectsState.status = 'error';
+p.projectsState.repos = [];
+p.projectsState.errorMessage = '프로젝트를 불러올 수 없습니다. GitHub 요청 제한이 발생했습니다. 잠시 후 다시 시도해 주세요.';
+p.renderProjects();
+```
+
+확인 후 `location.reload()` 또는 새로고침으로 정상 상태를 복구합니다. `다시 시도` 버튼은 실제 API를 호출합니다.
 
 ### Contact 상태
 

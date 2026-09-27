@@ -20,6 +20,7 @@
 │   └── projects.js    # GitHub API 요청, 카드 표시, 언어 필터
 ├── images/
 │   ├── b1-1-architecture.svg
+│   ├── javascript-event-loop.png
 │   ├── favicon.svg
 │   └── profile-cat.jpg
 ├── docs/
@@ -70,12 +71,7 @@ Contact 폼은 입력 검증 데모이며 실제 이메일은 전송하지 않�
 | Projects | API 요청·재시도 | loading/success/empty/error | 상태 안내, 카드, 재시도 버튼 갱신 |
 | 프로젝트 필터 | 필터 버튼 `click` | `selectedLanguage` 변경 | `filter()` 결과 카드와 개수 갱신 |
 
-## 구현 핵심
-
-- **상태와 렌더링 분리:** 프레임워크 없이 기능별 상태를 변수·객체로 관리합니다. 이벤트에서 상태를 변경한 뒤 `renderTheme`, `renderMenu`, `renderContactForm`, `renderProjects`가 관련 DOM만 갱신합니다.
-- **테마 상태 유지:** `currentTheme`을 기준으로 `data-theme`과 버튼 정보를 렌더링하고, 선택값을 `localStorage`에 저장해 새로고침 후에도 복원합니다.
-- **Contact 검증:** `input`마다 해당 필드의 오류를 `contactState`에 반영하고, `submit`에서는 전체 필드를 다시 검사한 뒤 오류 또는 성공 상태를 렌더링합니다. 실제 이메일은 전송하지 않습니다.
-- **GitHub API 상태 처리:** 별도 백엔드 서버 없이 `loadProjects`가 GitHub REST API를 호출합니다. 요청 전 loading 상태를 먼저 렌더링하고, `fetch` 결과를 success·empty·error로 나눠 `renderProjects`에 전달합니다. 403 요청 제한과 그 밖의 실패를 error 상태로 처리하며 같은 요청을 재시도할 수 있습니다.
+기능별 모듈에서 상태와 렌더링 함수를 관리합니다. 이벤트 처리 함수는 상태를 변경하고, 렌더링 함수는 그 상태를 읽어 DOM을 갱신합니다.
 
 ## 실행 방법
 
@@ -84,65 +80,26 @@ Contact 폼은 입력 검증 데모이며 실제 이메일은 전송하지 않�
 3. Live Server로 `index.html`을 실행합니다.
 4. 최신 Chrome에서 확인합니다.
 
-별도의 패키지 설치나 빌드 과정은 없습니다. ES 모듈을 사용하므로 파일을 직접 여는 `file://` 대신 Live Server의 HTTP 주소로 실행합니다. `main.js`가 각 모듈의 초기화 함수를 한 번씩 호출합니다.
+별도의 패키지 설치나 빌드 과정은 없습니다. ES 모듈을 사용하므로 파일을 직접 여는 `file://` 대신 Live Server의 HTTP 주소로 실행합니다.
 
 ## GitHub Projects
 
-페이지를 열면 다음 엔드포인트에서 `naktaa`의 공개 저장소를 최근 업데이트 순으로 최대 100개 가져옵니다.
+페이지를 열면 다음 엔드포인트에서 대상의 공개 저장소를 최근 업데이트 순으로 최대 100개 가져옵니다.
 
 ```text
 https://api.github.com/users/naktaa/repos?sort=updated&per_page=100
 ```
 
-- `fetch`, `async/await`, `try/catch`, `response.ok` 사용
-- loading, success, empty, error 상태 구분
-- 403 요청 제한 안내와 그 밖의 실패에 대한 공통 오류 안내
-- 오류 상태에서 같은 요청을 실행하는 재시도 버튼 제공
+### 비동기 요청과 화면 갱신
+
+![JavaScript의 Call Stack, Web APIs, Callback Queue와 Event Loop 관계](images/javascript-event-loop.png)
+
+`fetch` 응답을 기다리는 동안에도 다른 이벤트를 처리할 수 있으며, 응답 후 상태를 바꾸고 화면을 갱신합니다. 그림은 개념도이며, `await` 이후 실행은 별도의 마이크로태스크로 이어집니다.
+
 - 저장소 Description이 없으면 설명 문단 생략
 - API 응답의 주 언어로 필터 버튼 생성
 
-### Projects 상태별 UI 확인
-
-최초 API 요청이 끝난 뒤 Chrome Console에서 모듈을 한 번 가져옵니다. 학습용으로 export한 상태 객체와 렌더 함수를 사용합니다.
-
-```js
-const p = await import('./js/projects.js');
-```
-
-이미 로드된 같은 모듈을 가져오므로 현재 화면의 상태를 공유하며 API를 다시 요청하지 않습니다. `p.initProjects()`는 다시 호출하지 않습니다. 같은 페이지에서는 아래 예제만 이어서 실행하고, 새로고침 후에는 import부터 다시 실행합니다. 요청 중에 상태를 바꾸면 응답이 화면을 덮어쓸 수 있습니다. `success`는 정상 로드한 화면에서 확인합니다.
-
-```js
-// loading
-p.projectsState.status = 'loading';
-p.projectsState.repos = [];
-p.renderProjects();
-```
-
-```js
-// empty
-p.projectsState.status = 'empty';
-p.projectsState.repos = [];
-p.renderProjects();
-```
-
-```js
-// 일반 error
-p.projectsState.status = 'error';
-p.projectsState.repos = [];
-p.projectsState.errorMessage = '프로젝트를 불러올 수 없습니다. 잠시 후 다시 시도해 주세요.';
-p.renderProjects();
-```
-
-403 요청 제한 안내:
-
-```js
-p.projectsState.status = 'error';
-p.projectsState.repos = [];
-p.projectsState.errorMessage = '프로젝트를 불러올 수 없습니다. GitHub 요청 제한이 발생했습니다. 잠시 후 다시 시도해 주세요.';
-p.renderProjects();
-```
-
-확인 후 `location.reload()` 또는 새로고침으로 정상 상태를 복구합니다. `다시 시도` 버튼은 실제 API를 호출합니다.
+상태별 화면 확인 방법은 [Console 실습](docs/study-notes.md#projects-state-practice)을 참고하세요.
 
 ## 동작 기준값
 
