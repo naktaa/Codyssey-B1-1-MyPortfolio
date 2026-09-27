@@ -1,5 +1,8 @@
 const GITHUB_USERNAME = 'naktaa';
 const PROJECTS_URL = `https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`;
+const PROJECTS_CACHE_KEY = `github-projects:${GITHUB_USERNAME}:v4`;
+const PROJECTS_CACHE_DURATION = 60 * 1000;
+const KOREA_TIME_OFFSET = 9 * 60 * 60 * 1000;
 const ALL_PROJECT_LANGUAGES = 'all';
 const projectsGrid = document.querySelector('.projects-grid');
 const projectsFilters = document.querySelector('.projects-filters');
@@ -12,6 +15,73 @@ const projectsState = {
   errorMessage: '',
   selectedLanguage: ALL_PROJECT_LANGUAGES,
 };
+
+// 카드와 언어 필터가 사용하는 GitHub 저장소 필드만 검사합니다.
+const isValidRepos = (repos) => Array.isArray(repos) && repos.every((repo) => (
+  repo !== null
+  && typeof repo === 'object'
+  && typeof repo.name === 'string'
+  && repo.name.length > 0
+  && (repo.description === null || typeof repo.description === 'string')
+  && (repo.language === null || typeof repo.language === 'string')
+  && Number.isInteger(repo.stargazers_count)
+  && repo.stargazers_count >= 0
+));
+
+// 밀리초 시각을 한국 시간대의 숫자 날짜 문자열로 바꿉니다.
+const formatKoreaTimestamp = (timestamp) => new Date(timestamp + KOREA_TIME_OFFSET)
+  .toISOString()
+  .slice(0, 19)
+  .replace('T', ' ');
+
+// 한국 시각 문자열을 만료 계산용 밀리초 값으로 변환하고 형식을 검증합니다.
+const parseKoreaTimestamp = (value) => {
+  const parts = /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/.exec(value);
+  if (!parts) return NaN;
+
+  const [, year, month, day, hour, minute, second] = parts;
+  const timestamp = Date.UTC(
+    Number(year),
+    Number(month) - 1,
+    Number(day),
+    Number(hour),
+    Number(minute),
+    Number(second),
+  ) - KOREA_TIME_OFFSET;
+  return formatKoreaTimestamp(timestamp) === value ? timestamp : NaN;
+};
+
+// 저장소 접근이나 캐시 데이터가 유효하지 않으면 API 요청으로 넘깁니다.
+const readCachedProjects = () => {
+  let cachedValue;
+  try {
+    cachedValue = localStorage.getItem(PROJECTS_CACHE_KEY);
+  } catch {
+    return null;
+  }
+  if (cachedValue === null) return null;
+
+  try {
+    const { fetchedAt, fetchedAtMs, repos } = JSON.parse(cachedValue);
+    const parsedFetchedAt = typeof fetchedAt === 'string' ? parseKoreaTimestamp(fetchedAt) : NaN;
+    if (!Number.isSafeInteger(fetchedAtMs) || parsedFetchedAt !== Math.floor(fetchedAtMs / 1000) * 1000) return null;
+    const age = Date.now() - fetchedAtMs;
+    if (age < 0 || age >= PROJECTS_CACHE_DURATION) return null;
+    return isValidRepos(repos) ? repos : null;
+  } catch {
+    return null;
+  }
+};
+
+// 저장 실패가 API 성공 화면을 막지 않도록 캐시 쓰기만 따로 처리합니다.
+const saveCachedProjects = (repos, fetchedAt, fetchedAtMs) => {
+  try {
+    localStorage.setItem(PROJECTS_CACHE_KEY, JSON.stringify({ fetchedAt, fetchedAtMs, repos }));
+  } catch {
+    // 저장 공간 제한이나 브라우저 설정으로 실패해도 이번 응답은 표시합니다.
+  }
+};
+
 // GitHub API 응답을 안전한 카드 HTML과 언어 필터 데이터로 가공합니다.
 // API의 문자열이 HTML 태그나 속성으로 해석되지 않도록 변환합니다.
 const escapeHTML = (value) => {
@@ -101,9 +171,19 @@ const renderProjects = () => {
     }
   }
 };
-// GitHub API를 요청하고 결과를 Projects 상태에 저장한 뒤 화면을 다시 그립니다.
+// 유효한 캐시를 사용하거나 GitHub API를 요청한 뒤 Projects 화면을 다시 그립니다.
 const loadProjects = async () => {
   if (projectsState.status === 'loading') return;
+
+  const cachedRepos = readCachedProjects();
+  if (cachedRepos !== null) {
+    projectsState.repos = cachedRepos;
+    projectsState.status = cachedRepos.length > 0 ? 'success' : 'empty';
+    projectsState.errorMessage = '';
+    renderProjects();
+    return;
+  }
+
   projectsState.status = 'loading';
   projectsState.repos = [];
   projectsState.errorMessage = '';
@@ -118,9 +198,12 @@ const loadProjects = async () => {
         : '프로젝트를 불러올 수 없습니다. 잠시 후 다시 시도해 주세요.';
     } else {
       const repos = await response.json();
-      if (!Array.isArray(repos)) throw new Error();
+      if (!isValidRepos(repos)) throw new Error();
+      const fetchedAtMs = Date.now();
+      const fetchedAt = formatKoreaTimestamp(fetchedAtMs);
       projectsState.repos = repos;
       projectsState.status = repos.length > 0 ? 'success' : 'empty';
+      saveCachedProjects(repos, fetchedAt, fetchedAtMs);
     }
   } catch {
     projectsState.status = 'error';

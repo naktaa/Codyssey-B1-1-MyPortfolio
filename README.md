@@ -17,7 +17,7 @@
 │   ├── navigation.js  # 모바일 메뉴, 섹션 이동, 스크롤 UI
 │   ├── reveal.js      # 화면 진입 시 요소 표시 애니메이션
 │   ├── contact.js     # 폼 입력 검사와 오류·성공 안내
-│   └── projects.js    # GitHub API 요청, 카드 표시, 언어 필터
+│   └── projects.js    # GitHub API·캐시, 카드 표시, 언어 필터
 ├── images/
 │   ├── b1-1-architecture.svg
 │   ├── favicon.svg
@@ -54,7 +54,7 @@ HTML과 CSS가 DOM·CSSOM을 만들고, JavaScript가 사용자 이벤트에 따
 - 다크 모드 전환, `localStorage` 저장·복원
 - Intersection Observer 기반 스크롤 표시 애니메이션
 - 이름·이메일·메시지 폼 유효성 검사
-- GitHub 저장소 loading·success·empty·error 렌더링과 재시도
+- GitHub 저장소 1분 캐시, loading·success·empty·error 렌더링과 재시도
 - 선택 기능: GitHub 저장소 언어별 필터
 - 키보드 초점, ARIA 속성, 동작 줄이기 설정 대응
 
@@ -67,7 +67,7 @@ Contact 폼은 입력 검증 데모이며 실제 이메일은 전송하지 않�
 | 테마 | 테마 버튼 `click` | `currentTheme` 변경 및 저장 | `data-theme`, 아이콘, ARIA 갱신 |
 | 모바일 메뉴 | 메뉴 버튼 `click` | `isMenuOpen` 변경 | 메뉴 클래스와 ARIA 갱신 |
 | Contact | 필드 `input`, 폼 `submit` | 오류·제출 상태 변경 | 필드 오류와 성공 안내 갱신 |
-| Projects | API 요청·재시도 | loading/success/empty/error | 상태 안내, 카드, 재시도 버튼 갱신 |
+| Projects | 첫 로드·재시도 시 캐시 확인 또는 API 요청 | success/empty 또는 loading→success/empty/error | 상태 안내, 카드, 재시도 버튼 갱신 |
 | 프로젝트 필터 | 필터 버튼 `click` | `selectedLanguage` 변경 | `filter()` 결과 카드와 개수 갱신 |
 
 ## 구현 핵심
@@ -75,7 +75,7 @@ Contact 폼은 입력 검증 데모이며 실제 이메일은 전송하지 않�
 - **상태와 렌더링 분리:** 프레임워크 없이 기능별 상태를 변수·객체로 관리합니다. 이벤트에서 상태를 변경한 뒤 `renderTheme`, `renderMenu`, `renderContactForm`, `renderProjects`가 관련 DOM만 갱신합니다.
 - **테마 상태 유지:** `currentTheme`을 기준으로 `data-theme`과 버튼 정보를 렌더링하고, 선택값을 `localStorage`에 저장해 새로고침 후에도 복원합니다.
 - **Contact 검증:** `input`마다 해당 필드의 오류를 `contactState`에 반영하고, `submit`에서는 전체 필드를 다시 검사한 뒤 오류 또는 성공 상태를 렌더링합니다. 실제 이메일은 전송하지 않습니다.
-- **GitHub API 상태 처리:** 별도 백엔드 서버 없이 `loadProjects`가 GitHub REST API를 호출합니다. 요청 전 loading 상태를 먼저 렌더링하고, `fetch` 결과를 success·empty·error로 나눠 `renderProjects`에 전달합니다. 403 요청 제한과 그 밖의 실패를 error 상태로 처리하며 같은 요청을 재시도할 수 있습니다.
+- **GitHub API 상태 처리:** 별도 백엔드 서버 없이 `loadProjects`가 캐시를 확인합니다. 유효한 캐시가 없으면 loading 상태를 먼저 렌더링하고 GitHub REST API를 호출합니다. `fetch` 결과를 success·empty·error로 나눠 `renderProjects`에 전달합니다. 403 요청 제한과 그 밖의 실패를 error 상태로 처리하며 같은 요청을 재시도할 수 있습니다.
 
 ## 실행 방법
 
@@ -88,7 +88,7 @@ Contact 폼은 입력 검증 데모이며 실제 이메일은 전송하지 않�
 
 ## GitHub Projects
 
-페이지를 열면 다음 엔드포인트에서 `naktaa`의 공개 저장소를 최근 업데이트 순으로 최대 100개 가져옵니다.
+유효한 캐시가 없을 때 다음 엔드포인트에서 `naktaa`의 공개 저장소를 최근 업데이트 순으로 최대 100개 가져옵니다.
 
 ```text
 https://api.github.com/users/naktaa/repos?sort=updated&per_page=100
@@ -100,6 +100,38 @@ https://api.github.com/users/naktaa/repos?sort=updated&per_page=100
 - 오류 상태에서 같은 요청을 실행하는 재시도 버튼 제공
 - 저장소 Description이 없으면 설명 문단 생략
 - API 응답의 주 언어로 필터 버튼 생성
+
+정상 API 응답의 저장소 목록(빈 배열 포함)과 응답 검증 시각을 브라우저 **Application > Local Storage**의 `github-projects:naktaa:v4` 키에 저장합니다. `fetchedAt`은 한국 시간 기준 `2026-09-27 21:34:56` 형식으로, 초까지만 표시합니다. 정확한 1분 만료 계산을 위해 내부 비교용 `fetchedAtMs`도 함께 저장합니다. 저장 후 1분 미만이면 페이지 로드나 재시도 시 캐시를 사용해 `fetch`를 호출하지 않습니다. 1분 이상 지났거나 캐시가 없거나 잘못되었으면 API를 다시 요청하고, 정상 응답을 검증한 때에만 저장 시각을 갱신합니다. 캐시 사용만으로 유효기간이 연장되지는 않습니다. API가 실패하면 기존 오류·재시도 화면을 표시합니다.
+
+이 캐시는 반복 요청을 줄이는 기능이며 엄격한 요청 횟수 제한 장치는 아닙니다. 같은 IP의 다른 요청, 여러 탭의 동시 요청, 실패 후 사용자의 재시도는 통제하지 않습니다.
+
+### 캐시 갱신 시각 확인
+
+`fetchedAt`은 한국 시각 문자열이라 Application > Local Storage에서 바로 확인할 수 있습니다. `fetchedAtMs`는 1분 만료 판정의 정밀도를 유지하기 위한 내부 숫자입니다.
+
+```js
+JSON.parse(localStorage.getItem('github-projects:naktaa:v4')).fetchedAt;
+```
+
+캐시가 재사용됐는지는 Network에서 `api.github.com/users/naktaa/repos` 요청이 새로 생기지 않았는지 확인하고, 이 코드를 다시 실행해 `fetchedAt`이 그대로인지 확인합니다. 최종 확인은 Application > Local Storage에서 원본 날짜 문자열이 동일한지도 비교하세요.
+
+만료 동작을 바로 확인하려면 Console에서 저장 시각을 1분 전으로 바꾼 뒤 페이지를 새로고침합니다. API 요청이 다시 발생하고 성공 응답 후 `fetchedAt` 값이 바뀌어야 합니다.
+
+```js
+const cacheKey = 'github-projects:naktaa:v4';
+const cachedProjects = JSON.parse(localStorage.getItem(cacheKey));
+const expiredAtMs = Date.now() - 60 * 1000;
+const expiredAt = new Date(expiredAtMs + 9 * 60 * 60 * 1000)
+  .toISOString()
+  .slice(0, 19)
+  .replace('T', ' ');
+localStorage.setItem(cacheKey, JSON.stringify({
+  ...cachedProjects,
+  fetchedAt: expiredAt,
+  fetchedAtMs: expiredAtMs,
+}));
+location.reload();
+```
 
 ### Projects 상태별 UI 확인
 
@@ -142,7 +174,7 @@ p.projectsState.errorMessage = '프로젝트를 불러올 수 없습니다. GitH
 p.renderProjects();
 ```
 
-확인 후 `location.reload()` 또는 새로고침으로 정상 상태를 복구합니다. `다시 시도` 버튼은 실제 API를 호출합니다.
+확인 후 `location.reload()` 또는 새로고침으로 정상 상태를 복구합니다. Console에서 만든 오류 화면의 `다시 시도` 버튼은 유효한 캐시가 있으면 그 목록을 다시 표시하고, 캐시가 없거나 만료됐으면 API를 호출합니다.
 
 ## 동작 기준값
 
